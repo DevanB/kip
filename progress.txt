@@ -14,6 +14,7 @@
 - Page directories use kebab-case (e.g., `dr-tests/create.tsx`), not PascalCase
 - Use `store.form()` Wayfinder helper with Inertia `<Form>` component for form action/method
 - For dynamic array forms, use Inertia's `useForm` hook with `post(store().url)` pattern
+- Navigation buttons: Use `<Button asChild><Link href={action().url}>...</Link></Button>` pattern
 
 ---
 
@@ -197,5 +198,19 @@ Thread: https://ampcode.com/threads/T-019bb775-d006-74ae-9e1f-f46311c2b208
   - Use `useForm` from Inertia for complex forms with dynamic arrays instead of `<Form>` component
   - Nested validation rules: `phases.*.title`, `phases.*.started_at`, etc.
   - Use `after_or_equal:phases.*.started_at` for end time validation against start time in same array item
+
+---
+
+## 2026-01-13 - US-015
+Thread: https://ampcode.com/threads/T-019bb779-ac52-74a8-b198-0d6ee15c0517
+- Added "Add DR Test" button to dashboard that navigates to /dr-tests/create
+- Uses Button component with asChild wrapping Inertia Link for SPA navigation
+- Uses Wayfinder `create()` action for type-safe route URL generation
+- DrTestController store method already redirects to dashboard route on success
+- Files changed: resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Use `Button asChild` with `Link` inside for styled navigation buttons
+  - Import Wayfinder controller actions: `import { create } from '@/actions/App/Http/Controllers/DrTestController'`
+  - Call action to get URL: `create().url`
 
 ---
