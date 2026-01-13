@@ -6,8 +6,10 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { create } from '@/actions/App/Http/Controllers/DrTestController';
+import { index as drTestsIndex } from '@/routes/dr-tests';
+import { edit as kpiTargetsEdit } from '@/routes/kpi-targets';
 import { Head, Link } from '@inertiajs/react';
-import { PlusCircle } from 'lucide-react';
+import { History, PlusCircle, Settings } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -37,12 +39,26 @@ export default function Dashboard({ latestRto = null, targetRto = 60, latestRpo 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">DR KPI Dashboard</h1>
-                    <Button asChild>
-                        <Link href={create().url}>
-                            <PlusCircle className="size-4" />
-                            Add DR Test
-                        </Link>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href={drTestsIndex().url}>
+                                <History className="size-4" />
+                                History
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href={kpiTargetsEdit().url}>
+                                <Settings className="size-4" />
+                                Settings
+                            </Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href={create().url}>
+                                <PlusCircle className="size-4" />
+                                Add DR Test
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <RtoWidget latestRto={latestRto} targetRto={targetRto} />
