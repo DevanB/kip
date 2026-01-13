@@ -9,6 +9,7 @@
 - Run `php artisan wayfinder:generate` after adding/changing controllers
 - Widget components should use shadcn Card (CardHeader, CardTitle, CardDescription, CardContent)
 - Charts: Use ChartContainer + ChartConfig from shadcn/chart, colors via `var(--chart-N)` CSS vars
+- Recharts ReferenceLine: import from 'recharts', y={value} for horizontal, strokeDasharray for dashed style
 
 ---
 
@@ -131,5 +132,19 @@ Thread: https://ampcode.com/threads/T-019bb601-13d2-749a-a774-c4fa7b8e5c9c
   - chartConfig uses `var(--chart-1)` and `var(--chart-2)` CSS variables for colors
   - TestDataPoint interface: { test_date: string, rto_minutes: number, rpo_minutes: number }
   - LineChart needs accessibilityLayer prop for a11y compliance
+
+---
+
+## 2026-01-13 - US-011
+Thread: https://ampcode.com/threads/T-019bb76a-c36e-715b-902a-660de7352941
+- Added target reference lines to TrendChart component using Recharts ReferenceLine
+- TrendChart now accepts rtoTarget and rpoTarget props (optional)
+- Reference lines are horizontal, dashed (strokeDasharray="5 5"), and labeled with target values
+- Dashboard passes targetRto and targetRpo to TrendChart for display
+- Files changed: resources/js/components/trend-chart.tsx, resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Recharts ReferenceLine: import from 'recharts', use y={value} for horizontal line, strokeDasharray for dashed
+  - Label can be an object with value, position, fill, and fontSize properties
+  - Use conditional rendering {prop !== undefined && <ReferenceLine ... />} for optional reference lines
 
 ---
