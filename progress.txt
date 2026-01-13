@@ -106,3 +106,14 @@ Thread: https://ampcode.com/threads/T-019bb5fc-ab40-7564-a859-c99a6006715c
   - Dashboard props should use defaults (e.g., `targetRto = 60`) for standalone testing
 
 ---
+
+## 2026-01-13 - US-009
+Thread: https://ampcode.com/threads/T-019bb5ff-5afc-7795-a0bc-996bae8c3d2d
+- Created RpoWidget component mirroring RtoWidget structure
+- Updated dashboard.tsx to include RpoWidget with latestRpo/targetRpo props
+- Files changed: resources/js/components/rpo-widget.tsx (new), resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - RpoWidget and RtoWidget share identical status color/progress logic - could extract to shared utility
+  - Dashboard props interface extended with latestRpo and targetRpo (both optional with defaults)
+
+---
