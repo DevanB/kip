@@ -1,4 +1,5 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { RpoWidget } from '@/components/rpo-widget';
 import { RtoWidget } from '@/components/rto-widget';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
@@ -15,9 +16,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface DashboardProps {
     latestRto?: number | null;
     targetRto?: number;
+    latestRpo?: number | null;
+    targetRpo?: number;
 }
 
-export default function Dashboard({ latestRto = null, targetRto = 60 }: DashboardProps) {
+export default function Dashboard({
+    latestRto = null,
+    targetRto = 60,
+    latestRpo = null,
+    targetRpo = 60,
+}: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="DR KPI Dashboard" />
@@ -25,12 +33,7 @@ export default function Dashboard({ latestRto = null, targetRto = 60 }: Dashboar
                 <h1 className="text-2xl font-bold">DR KPI Dashboard</h1>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <RtoWidget latestRto={latestRto} targetRto={targetRto} />
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                        <span className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                            RPO Widget
-                        </span>
-                    </div>
+                    <RpoWidget latestRpo={latestRpo} targetRpo={targetRpo} />
                 </div>
                 <div className="relative min-h-80 flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
