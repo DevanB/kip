@@ -13,6 +13,7 @@
 - Dashboard route requires auth; tests need `$this->actingAs(User::factory()->create())`
 - Page directories use kebab-case (e.g., `dr-tests/create.tsx`), not PascalCase
 - Use `store.form()` Wayfinder helper with Inertia `<Form>` component for form action/method
+- For dynamic array forms, use Inertia's `useForm` hook with `post(store().url)` pattern
 
 ---
 
@@ -180,5 +181,21 @@ Thread: https://ampcode.com/threads/T-019bb771-9e9d-7000-aebd-154bc8247589
   - Date fields in database include time (00:00:00), compare using Carbon format() in tests
   - Use Form component from @inertiajs/react with store.form() pattern for Wayfinder integration
   - Textarea doesn't have shadcn component, use plain textarea with matching styles
+
+---
+
+## 2026-01-13 - US-014
+Thread: https://ampcode.com/threads/T-019bb775-d006-74ae-9e1f-f46311c2b208
+- Added dynamic phases section to DR test form with add/remove phase functionality
+- Updated StoreDrTestRequest to validate phases array with title, started_at, finished_at per phase
+- Updated DrTestController to save phases to dr_test_phases table with calculated duration
+- Frontend shows auto-calculated duration when both times are set
+- Updated DrTestControllerTest with 10 test cases covering phases validation
+- Files changed: resources/js/pages/dr-tests/create.tsx, app/Http/Requests/StoreDrTestRequest.php, app/Http/Controllers/DrTestController.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Carbon `$start->diffInMinutes($end)` returns positive value (absolute difference from start to end)
+  - Use `useForm` from Inertia for complex forms with dynamic arrays instead of `<Form>` component
+  - Nested validation rules: `phases.*.title`, `phases.*.started_at`, etc.
+  - Use `after_or_equal:phases.*.started_at` for end time validation against start time in same array item
 
 ---
