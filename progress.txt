@@ -5,6 +5,8 @@
 - Run `npm run build` to verify TypeScript/frontend compiles
 - Models need `use HasFactory` trait for factories to work
 - Carbon `diffInMinutes()` returns float, cast to int when comparing
+- Inertia pages use lowercase names (e.g., 'dashboard' not 'Dashboard')
+- Run `php artisan wayfinder:generate` after adding/changing controllers
 
 ---
 
@@ -73,5 +75,19 @@ Thread: https://ampcode.com/threads/T-019bb5f7-b193-734c-b0a3-d97492c1d849
   - Use `npx shadcn@latest add chart --yes --overwrite` to avoid prompts
   - Chart component exports: ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle
   - Chart component uses Recharts as underlying library
+
+---
+
+## 2026-01-13 - US-007
+Thread: https://ampcode.com/threads/T-019bb5f9-0c3b-7199-9aa8-edf16a21e902
+- Created DashboardController with index method that renders 'dashboard' Inertia page
+- Updated dashboard.tsx with "DR KPI Dashboard" title and responsive 2-column grid layout
+- Updated routes/web.php to use DashboardController instead of inline closure
+- Files changed: app/Http/Controllers/DashboardController.php (new), resources/js/pages/dashboard.tsx, routes/web.php
+- **Learnings for future iterations:**
+  - This codebase uses lowercase page names (e.g., 'dashboard' not 'Dashboard')
+  - Existing dashboard uses AppLayout with breadcrumbs pattern
+  - Wayfinder auto-generates actions on `php artisan wayfinder:generate`
+  - Browser testing requires dev server running (Herd site needs to be parked/linked)
 
 ---
