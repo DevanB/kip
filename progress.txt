@@ -3,6 +3,8 @@
 - Use PHP 8 generic type hints for relationships: `HasMany<ChildModel, $this>`
 - Run `vendor/bin/pint --dirty` for PHP formatting
 - Run `npm run build` to verify TypeScript/frontend compiles
+- Models need `use HasFactory` trait for factories to work
+- Carbon `diffInMinutes()` returns float, cast to int when comparing
 
 ---
 
@@ -24,5 +26,18 @@ Thread: https://ampcode.com/threads/T-019bb5f0-d413-747f-ab35-6a0fbe741499
   - DrTest->phases() returns HasMany relationship
   - DrTestPhase->drTest() returns BelongsTo relationship
   - test_date is cast to date, started_at/finished_at are cast to datetime
+
+---
+
+## 2026-01-13 - US-003
+Thread: https://ampcode.com/threads/T-019bb5f2-9b03-7282-a27a-19bda71eb2cd
+- Created DrTestFactory and DrTestPhaseFactory with realistic fake data
+- Added HasFactory trait to DrTest and DrTestPhase models
+- Created DrTestFactoryTest with 4 test cases to verify factory behavior
+- Files changed: database/factories/DrTestFactory.php, database/factories/DrTestPhaseFactory.php, app/Models/DrTest.php, app/Models/DrTestPhase.php, tests/Feature/DrTestFactoryTest.php
+- **Learnings for future iterations:**
+  - DrTestPhaseFactory generates duration_minutes by calculating from started_at and finished_at difference
+  - Use `DrTestPhase::factory()->for($drTest)` to link phase to existing test
+  - Use `DrTest::factory()->has(DrTestPhase::factory()->count(3), 'phases')` to create test with phases
 
 ---
