@@ -231,3 +231,18 @@ Thread: https://ampcode.com/threads/T-019bb77f-4210-73a1-afe2-07dbac3319f7
   - Table rows are simple - no link to detail view yet (US-017 will add that)
 
 ---
+
+## 2026-01-13 - US-017
+Thread: https://ampcode.com/threads/T-019bb784-bad5-77fa-b3fa-e691ec231065
+- Created DrTestController show method with eager loading of phases
+- Created dr-tests/show.tsx page component displaying test details and phases table
+- Added route at /dr-tests/{drTest} for detail view
+- Updated index.tsx with clickable links from history list to detail view
+- Added 3 tests: renders detail view, displays phases correctly, returns 404 for non-existent test
+- Files changed: app/Http/Controllers/DrTestController.php, resources/js/pages/dr-tests/show.tsx, resources/js/pages/dr-tests/index.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Use route model binding with `DrTest $drTest` for automatic 404 on non-existent records
+  - Import Wayfinder route with `show(id).url` pattern: `import { show } from '@/routes/dr-tests'`
+  - Dynamic breadcrumbs: create inside component function, not as module constant
+
+---
