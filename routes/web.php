@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DrTestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
@@ -14,6 +15,8 @@ Route::middleware([
     ValidateSessionWithWorkOS::class,
 ])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dr-tests/create', [DrTestController::class, 'create'])->name('dr-tests.create');
+    Route::post('dr-tests', [DrTestController::class, 'store'])->name('dr-tests.store');
 });
 
 require __DIR__.'/settings.php';
