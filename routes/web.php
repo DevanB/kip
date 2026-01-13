@@ -17,6 +17,7 @@ Route::middleware([
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dr-tests', [DrTestController::class, 'index'])->name('dr-tests.index');
     Route::get('dr-tests/create', [DrTestController::class, 'create'])->name('dr-tests.create');
+    Route::get('dr-tests/{drTest}', [DrTestController::class, 'show'])->name('dr-tests.show');
     Route::post('dr-tests', [DrTestController::class, 'store'])->name('dr-tests.store');
 });
 

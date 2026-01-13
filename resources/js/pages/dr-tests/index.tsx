@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { index } from '@/routes/dr-tests';
+import { index, show } from '@/routes/dr-tests';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { PlusCircle } from 'lucide-react';
@@ -60,8 +60,12 @@ export default function Index({ drTests }: IndexProps) {
                                 </TableHeader>
                                 <TableBody>
                                     {drTests.map((test) => (
-                                        <TableRow key={test.id}>
-                                            <TableCell className="font-medium">{test.test_date}</TableCell>
+                                        <TableRow key={test.id} className="cursor-pointer hover:bg-muted/50">
+                                            <TableCell className="font-medium">
+                                                <Link href={show(test.id).url} className="hover:underline">
+                                                    {test.test_date}
+                                                </Link>
+                                            </TableCell>
                                             <TableCell className="text-right">{test.rto_minutes}</TableCell>
                                             <TableCell className="text-right">{test.rpo_minutes}</TableCell>
                                             <TableCell className="text-right">{test.phases_count}</TableCell>

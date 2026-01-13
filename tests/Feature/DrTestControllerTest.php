@@ -252,11 +252,73 @@ it('validates rpo_minutes is a positive integer', function () {
         ->assertSessionHasErrors(['rpo_minutes']);
 });
 
+it('renders the dr test detail view', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(2), 'phases')
+        ->create([
+            'test_date' => '2026-01-15',
+            'rto_minutes' => 45,
+            'rpo_minutes' => 30,
+            'notes' => 'Test notes for detail view',
+        ]);
+
+    $this->get("/dr-tests/{$drTest->id}")
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/show')
+            ->has('drTest')
+            ->where('drTest.id', $drTest->id)
+            ->where('drTest.test_date', '2026-01-15')
+            ->where('drTest.rto_minutes', 45)
+            ->where('drTest.rpo_minutes', 30)
+            ->where('drTest.notes', 'Test notes for detail view')
+            ->has('drTest.phases', 2)
+        );
+});
+
+it('displays dr test phases with correct data', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()->create(['test_date' => '2026-01-15']);
+
+    $phase = DrTestPhase::factory()->create([
+        'dr_test_id' => $drTest->id,
+        'title' => 'Failover initiation',
+        'started_at' => '2026-01-15 10:00:00',
+        'finished_at' => '2026-01-15 10:30:00',
+        'duration_minutes' => 30,
+    ]);
+
+    $this->get("/dr-tests/{$drTest->id}")
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/show')
+            ->where('drTest.phases.0.id', $phase->id)
+            ->where('drTest.phases.0.title', 'Failover initiation')
+            ->where('drTest.phases.0.started_at', '2026-01-15 10:00')
+            ->where('drTest.phases.0.finished_at', '2026-01-15 10:30')
+            ->where('drTest.phases.0.duration_minutes', 30)
+        );
+});
+
+it('returns 404 for non-existent dr test', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/dr-tests/99999')
+        ->assertNotFound();
+});
+
 it('requires authentication', function () {
     $this->get('/dr-tests')
         ->assertRedirect();
 
     $this->get('/dr-tests/create')
+        ->assertRedirect();
+
+    $drTest = DrTest::factory()->create();
+    $this->get("/dr-tests/{$drTest->id}")
         ->assertRedirect();
 
     $this->post('/dr-tests', [

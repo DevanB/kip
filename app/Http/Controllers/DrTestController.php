@@ -35,6 +35,28 @@ class DrTestController extends Controller
         return Inertia::render('dr-tests/create');
     }
 
+    public function show(DrTest $drTest): Response
+    {
+        $drTest->load('phases');
+
+        return Inertia::render('dr-tests/show', [
+            'drTest' => [
+                'id' => $drTest->id,
+                'test_date' => $drTest->test_date->format('Y-m-d'),
+                'rto_minutes' => $drTest->rto_minutes,
+                'rpo_minutes' => $drTest->rpo_minutes,
+                'notes' => $drTest->notes,
+                'phases' => $drTest->phases->map(fn ($phase) => [
+                    'id' => $phase->id,
+                    'title' => $phase->title,
+                    'started_at' => $phase->started_at->format('Y-m-d H:i'),
+                    'finished_at' => $phase->finished_at->format('Y-m-d H:i'),
+                    'duration_minutes' => $phase->duration_minutes,
+                ]),
+            ],
+        ]);
+    }
+
     public function store(StoreDrTestRequest $request): RedirectResponse
     {
         $validated = $request->validated();
