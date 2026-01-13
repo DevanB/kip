@@ -460,3 +460,38 @@ it('returns 404 when editing non-existent dr test', function () {
     ])
         ->assertNotFound();
 });
+
+it('deletes a dr test and redirects to history', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(2), 'phases')
+        ->create();
+
+    $phaseIds = $drTest->phases->pluck('id')->toArray();
+
+    $this->delete("/dr-tests/{$drTest->id}")
+        ->assertRedirect('/dr-tests');
+
+    $this->assertDatabaseMissing('dr_tests', ['id' => $drTest->id]);
+
+    foreach ($phaseIds as $phaseId) {
+        $this->assertDatabaseMissing('dr_test_phases', ['id' => $phaseId]);
+    }
+});
+
+it('returns 404 when deleting non-existent dr test', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->delete('/dr-tests/99999')
+        ->assertNotFound();
+});
+
+it('requires authentication to delete a dr test', function () {
+    $drTest = DrTest::factory()->create();
+
+    $this->delete("/dr-tests/{$drTest->id}")
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('dr_tests', ['id' => $drTest->id]);
+});

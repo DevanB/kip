@@ -21,6 +21,7 @@ Route::middleware([
     Route::get('dr-tests/{drTest}/edit', [DrTestController::class, 'edit'])->name('dr-tests.edit');
     Route::post('dr-tests', [DrTestController::class, 'store'])->name('dr-tests.store');
     Route::put('dr-tests/{drTest}', [DrTestController::class, 'update'])->name('dr-tests.update');
+    Route::delete('dr-tests/{drTest}', [DrTestController::class, 'destroy'])->name('dr-tests.destroy');
 });
 
 require __DIR__.'/settings.php';

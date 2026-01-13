@@ -134,4 +134,11 @@ class DrTestController extends Controller
 
         return redirect()->route('dr-tests.show', $drTest);
     }
+
+    public function destroy(DrTest $drTest): RedirectResponse
+    {
+        $drTest->delete();
+
+        return redirect()->route('dr-tests.index');
+    }
 }

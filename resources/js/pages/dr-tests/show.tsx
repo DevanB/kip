@@ -1,12 +1,23 @@
-import { edit } from '@/actions/App/Http/Controllers/DrTestController';
+import { destroy, edit } from '@/actions/App/Http/Controllers/DrTestController';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { index } from '@/routes/dr-tests';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 
 interface Phase {
     id: number;
@@ -52,12 +63,41 @@ export default function Show({ drTest }: ShowProps) {
                             Back to History
                         </Link>
                     </Button>
-                    <Button variant="outline" size="sm" asChild>
-                        <Link href={edit(drTest.id).url}>
-                            <Pencil className="mr-1 size-4" />
-                            Edit
-                        </Link>
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={edit(drTest.id).url}>
+                                <Pencil className="mr-1 size-4" />
+                                Edit
+                            </Link>
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm">
+                                    <Trash2 className="mr-1 size-4" />
+                                    Delete
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete DR Test?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will permanently delete the DR test from {drTest.test_date} and all its phases.
+                                        This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() =>
+                                            router.delete(destroy(drTest.id).url)
+                                        }
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
