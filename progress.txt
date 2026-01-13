@@ -246,3 +246,20 @@ Thread: https://ampcode.com/threads/T-019bb784-bad5-77fa-b3fa-e691ec231065
   - Dynamic breadcrumbs: create inside component function, not as module constant
 
 ---
+
+## 2026-01-13 - US-018
+Thread: https://ampcode.com/threads/T-019bb787-cb00-775b-a175-4b8e7823befe
+- Added edit and update methods to DrTestController
+- Created UpdateDrTestRequest with same validation rules as StoreDrTestRequest
+- Created dr-tests/edit.tsx page component with pre-populated form data
+- Added routes: GET /dr-tests/{drTest}/edit and PUT /dr-tests/{drTest}
+- Added Edit button to show.tsx detail view with Pencil icon
+- Update method deletes all existing phases and recreates them (simpler than tracking changes)
+- Added 5 tests covering edit rendering, update flow, phase replacement, validation, and 404
+- Files changed: app/Http/Controllers/DrTestController.php, app/Http/Requests/UpdateDrTestRequest.php, resources/js/pages/dr-tests/edit.tsx, resources/js/pages/dr-tests/show.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Edit forms use `put(update(id).url)` pattern with Inertia's useForm
+  - Phase datetime fields need `Y-m-d\TH:i` format for datetime-local inputs
+  - Update strategy: delete all phases and recreate is simpler than tracking individual phase changes
+
+---
