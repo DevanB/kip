@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDrTestRequest;
+use App\Http\Requests\UpdateDrTestRequest;
 use App\Models\DrTest;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -82,5 +83,55 @@ class DrTestController extends Controller
         }
 
         return redirect()->route('dashboard');
+    }
+
+    public function edit(DrTest $drTest): Response
+    {
+        $drTest->load('phases');
+
+        return Inertia::render('dr-tests/edit', [
+            'drTest' => [
+                'id' => $drTest->id,
+                'test_date' => $drTest->test_date->format('Y-m-d'),
+                'rto_minutes' => $drTest->rto_minutes,
+                'rpo_minutes' => $drTest->rpo_minutes,
+                'notes' => $drTest->notes,
+                'phases' => $drTest->phases->map(fn ($phase) => [
+                    'id' => $phase->id,
+                    'title' => $phase->title,
+                    'started_at' => $phase->started_at->format('Y-m-d\TH:i'),
+                    'finished_at' => $phase->finished_at->format('Y-m-d\TH:i'),
+                ]),
+            ],
+        ]);
+    }
+
+    public function update(UpdateDrTestRequest $request, DrTest $drTest): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $drTest->update([
+            'test_date' => $validated['test_date'],
+            'rto_minutes' => $validated['rto_minutes'],
+            'rpo_minutes' => $validated['rpo_minutes'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        $drTest->phases()->delete();
+
+        foreach ($validated['phases'] as $phase) {
+            $startedAt = Carbon::parse($phase['started_at']);
+            $finishedAt = Carbon::parse($phase['finished_at']);
+            $durationMinutes = (int) $startedAt->diffInMinutes($finishedAt);
+
+            $drTest->phases()->create([
+                'title' => $phase['title'],
+                'started_at' => $startedAt,
+                'finished_at' => $finishedAt,
+                'duration_minutes' => $durationMinutes,
+            ]);
+        }
+
+        return redirect()->route('dr-tests.show', $drTest);
     }
 }

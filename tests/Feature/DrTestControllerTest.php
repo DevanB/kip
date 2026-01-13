@@ -335,3 +335,128 @@ it('requires authentication', function () {
     ])
         ->assertRedirect();
 });
+
+it('renders the edit dr test form with pre-populated data', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(2), 'phases')
+        ->create([
+            'test_date' => '2026-01-15',
+            'rto_minutes' => 45,
+            'rpo_minutes' => 30,
+            'notes' => 'Original notes',
+        ]);
+
+    $this->get("/dr-tests/{$drTest->id}/edit")
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/edit')
+            ->has('drTest')
+            ->where('drTest.id', $drTest->id)
+            ->where('drTest.test_date', '2026-01-15')
+            ->where('drTest.rto_minutes', 45)
+            ->where('drTest.rpo_minutes', 30)
+            ->where('drTest.notes', 'Original notes')
+            ->has('drTest.phases', 2)
+        );
+});
+
+it('updates an existing dr test', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(1), 'phases')
+        ->create([
+            'test_date' => '2026-01-15',
+            'rto_minutes' => 45,
+            'rpo_minutes' => 30,
+            'notes' => 'Original notes',
+        ]);
+
+    $this->put("/dr-tests/{$drTest->id}", [
+        'test_date' => '2026-01-20',
+        'rto_minutes' => 60,
+        'rpo_minutes' => 40,
+        'notes' => 'Updated notes',
+        'phases' => [
+            [
+                'title' => 'Updated phase',
+                'started_at' => '2026-01-20T14:00',
+                'finished_at' => '2026-01-20T15:00',
+            ],
+        ],
+    ])
+        ->assertRedirect("/dr-tests/{$drTest->id}");
+
+    $drTest->refresh();
+    expect($drTest->test_date->format('Y-m-d'))->toBe('2026-01-20');
+    expect($drTest->rto_minutes)->toBe(60);
+    expect($drTest->rpo_minutes)->toBe(40);
+    expect($drTest->notes)->toBe('Updated notes');
+    expect($drTest->phases)->toHaveCount(1);
+    expect($drTest->phases->first()->title)->toBe('Updated phase');
+    expect($drTest->phases->first()->duration_minutes)->toBe(60);
+});
+
+it('replaces all phases when updating', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(3), 'phases')
+        ->create();
+
+    $originalPhaseIds = $drTest->phases->pluck('id')->toArray();
+
+    $this->put("/dr-tests/{$drTest->id}", [
+        'test_date' => $drTest->test_date->format('Y-m-d'),
+        'rto_minutes' => $drTest->rto_minutes,
+        'rpo_minutes' => $drTest->rpo_minutes,
+        'phases' => [
+            [
+                'title' => 'New single phase',
+                'started_at' => '2026-01-15T10:00',
+                'finished_at' => '2026-01-15T10:30',
+            ],
+        ],
+    ])
+        ->assertRedirect();
+
+    $drTest->refresh();
+    expect($drTest->phases)->toHaveCount(1);
+    expect($drTest->phases->first()->title)->toBe('New single phase');
+
+    foreach ($originalPhaseIds as $phaseId) {
+        $this->assertDatabaseMissing('dr_test_phases', ['id' => $phaseId]);
+    }
+});
+
+it('validates required fields when updating', function () {
+    $this->actingAs(User::factory()->create());
+
+    $drTest = DrTest::factory()->create();
+
+    $this->put("/dr-tests/{$drTest->id}", [])
+        ->assertSessionHasErrors(['test_date', 'rto_minutes', 'rpo_minutes', 'phases']);
+});
+
+it('returns 404 when editing non-existent dr test', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/dr-tests/99999/edit')
+        ->assertNotFound();
+
+    $this->put('/dr-tests/99999', [
+        'test_date' => '2026-01-15',
+        'rto_minutes' => 45,
+        'rpo_minutes' => 30,
+        'phases' => [
+            [
+                'title' => 'Test phase',
+                'started_at' => '2026-01-15T10:00',
+                'finished_at' => '2026-01-15T10:30',
+            ],
+        ],
+    ])
+        ->assertNotFound();
+});

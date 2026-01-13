@@ -1,3 +1,4 @@
+import { edit } from '@/actions/App/Http/Controllers/DrTestController';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -5,7 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { index } from '@/routes/dr-tests';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Pencil } from 'lucide-react';
 
 interface Phase {
     id: number;
@@ -44,11 +45,17 @@ export default function Show({ drTest }: ShowProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`DR Test - ${drTest.test_date}`} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between gap-4">
                     <Button variant="ghost" size="sm" asChild>
                         <Link href={index().url}>
                             <ArrowLeft className="size-4" />
                             Back to History
+                        </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={edit(drTest.id).url}>
+                            <Pencil className="mr-1 size-4" />
+                            Edit
                         </Link>
                     </Button>
                 </div>
