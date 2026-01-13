@@ -8,6 +8,7 @@
 - Inertia pages use lowercase names (e.g., 'dashboard' not 'Dashboard')
 - Run `php artisan wayfinder:generate` after adding/changing controllers
 - Widget components should use shadcn Card (CardHeader, CardTitle, CardDescription, CardContent)
+- Charts: Use ChartContainer + ChartConfig from shadcn/chart, colors via `var(--chart-N)` CSS vars
 
 ---
 
@@ -115,5 +116,20 @@ Thread: https://ampcode.com/threads/T-019bb5ff-5afc-7795-a0bc-996bae8c3d2d
 - **Learnings for future iterations:**
   - RpoWidget and RtoWidget share identical status color/progress logic - could extract to shared utility
   - Dashboard props interface extended with latestRpo and targetRpo (both optional with defaults)
+
+---
+
+## 2026-01-13 - US-010
+Thread: https://ampcode.com/threads/T-019bb601-13d2-749a-a774-c4fa7b8e5c9c
+- Created TrendChart component using shadcn chart with Recharts LineChart
+- Displays RTO (blue/chart-1) and RPO (orange/chart-2) lines over time
+- Interactive tooltips show values on hover, empty state when no data
+- Integrated TrendChart into dashboard.tsx, replacing placeholder
+- Files changed: resources/js/components/trend-chart.tsx (new), resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Use ChartContainer with ChartConfig for shadcn chart integration
+  - chartConfig uses `var(--chart-1)` and `var(--chart-2)` CSS variables for colors
+  - TestDataPoint interface: { test_date: string, rto_minutes: number, rpo_minutes: number }
+  - LineChart needs accessibilityLayer prop for a11y compliance
 
 ---
