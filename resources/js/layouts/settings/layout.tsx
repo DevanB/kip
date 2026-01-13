@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useActiveUrl } from '@/hooks/use-active-url';
 import { cn, toUrl } from '@/lib/utils';
 import { appearance } from '@/routes';
+import { edit as editKpiTargets } from '@/routes/kpi-targets';
 import { edit } from '@/routes/profile';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
@@ -18,6 +19,11 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Appearance',
         href: appearance(),
+        icon: null,
+    },
+    {
+        title: 'KPI Targets',
+        href: editKpiTargets(),
         icon: null,
     },
 ];
