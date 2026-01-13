@@ -7,6 +7,7 @@
 - Carbon `diffInMinutes()` returns float, cast to int when comparing
 - Inertia pages use lowercase names (e.g., 'dashboard' not 'Dashboard')
 - Run `php artisan wayfinder:generate` after adding/changing controllers
+- Widget components should use shadcn Card (CardHeader, CardTitle, CardDescription, CardContent)
 
 ---
 
@@ -89,5 +90,19 @@ Thread: https://ampcode.com/threads/T-019bb5f9-0c3b-7199-9aa8-edf16a21e902
   - Existing dashboard uses AppLayout with breadcrumbs pattern
   - Wayfinder auto-generates actions on `php artisan wayfinder:generate`
   - Browser testing requires dev server running (Herd site needs to be parked/linked)
+
+---
+
+## 2026-01-13 - US-008
+Thread: https://ampcode.com/threads/T-019bb5fc-ab40-7564-a859-c99a6006715c
+- Created RtoWidget component with progress bar, color coding, and target achieved message
+- Integrated RtoWidget into dashboard.tsx with DashboardProps interface
+- Created .env.testing file to fix test environment
+- Files changed: resources/js/components/rto-widget.tsx (new), resources/js/pages/dashboard.tsx, .env.testing (new)
+- **Learnings for future iterations:**
+  - Widget components should use Card from shadcn/ui for consistent styling
+  - getStatusColor logic: green <= target, yellow within 50% above, red > 50% above
+  - Progress percentage calculation: 100% when at/below target, decreases as value exceeds target
+  - Dashboard props should use defaults (e.g., `targetRto = 60`) for standalone testing
 
 ---
