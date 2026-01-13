@@ -1,10 +1,13 @@
 import { RpoWidget } from '@/components/rpo-widget';
 import { RtoWidget } from '@/components/rto-widget';
 import { TrendChart } from '@/components/trend-chart';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { create } from '@/actions/App/Http/Controllers/DrTestController';
+import { Head, Link } from '@inertiajs/react';
+import { PlusCircle } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,7 +35,15 @@ export default function Dashboard({ latestRto = null, targetRto = 60, latestRpo 
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="DR KPI Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">DR KPI Dashboard</h1>
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold">DR KPI Dashboard</h1>
+                    <Button asChild>
+                        <Link href={create().url}>
+                            <PlusCircle className="size-4" />
+                            Add DR Test
+                        </Link>
+                    </Button>
+                </div>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <RtoWidget latestRto={latestRto} targetRto={targetRto} />
                     <RpoWidget latestRpo={latestRpo} targetRpo={targetRpo} />
