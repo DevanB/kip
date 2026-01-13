@@ -41,3 +41,14 @@ Thread: https://ampcode.com/threads/T-019bb5f2-9b03-7282-a27a-19bda71eb2cd
   - Use `DrTest::factory()->has(DrTestPhase::factory()->count(3), 'phases')` to create test with phases
 
 ---
+
+## 2026-01-13 - US-004
+Thread: https://ampcode.com/threads/T-019bb5f4-edd0-711d-a851-a607d2f715b3
+- Created kpi_targets migration with kpi_type (unique string) and target_minutes (integer) columns
+- Created KpiTarget Eloquent model with fillable fields
+- Files changed: database/migrations/2026_01_13_060459_create_kpi_targets_table.php, app/Models/KpiTarget.php
+- **Learnings for future iterations:**
+  - kpi_type values should be 'rto' or 'rpo'
+  - Use `updateOrCreate` for seeding to ensure idempotency (see US-005)
+
+---
