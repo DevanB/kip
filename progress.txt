@@ -1,0 +1,28 @@
+## Codebase Patterns
+- Use `casts()` method on models rather than `$casts` property (Laravel 12 convention)
+- Use PHP 8 generic type hints for relationships: `HasMany<ChildModel, $this>`
+- Run `vendor/bin/pint --dirty` for PHP formatting
+- Run `npm run build` to verify TypeScript/frontend compiles
+
+---
+
+## 2026-01-13 - US-001
+Thread: (Previous iteration - no thread URL)
+- Created migrations for `dr_tests` and `dr_test_phases` tables
+- Files changed: database/migrations/*_create_dr_tests_table.php, database/migrations/*_create_dr_test_phases_table.php
+- **Learnings for future iterations:**
+  - dr_test_phases has cascade delete on dr_test_id foreign key
+  - duration_minutes is stored as integer, not calculated
+
+---
+
+## 2026-01-13 - US-002
+Thread: https://ampcode.com/threads/T-019bb5f0-d413-747f-ab35-6a0fbe741499
+- Created DrTest and DrTestPhase Eloquent models with proper relationships
+- Files changed: app/Models/DrTest.php, app/Models/DrTestPhase.php
+- **Learnings for future iterations:**
+  - DrTest->phases() returns HasMany relationship
+  - DrTestPhase->drTest() returns BelongsTo relationship
+  - test_date is cast to date, started_at/finished_at are cast to datetime
+
+---
