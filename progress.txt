@@ -63,3 +63,15 @@ Thread: https://ampcode.com/threads/T-019bb5f6-7682-7428-898e-3818c43e77ca
   - Default targets are both 60 minutes
 
 ---
+
+## 2026-01-13 - US-006
+Thread: https://ampcode.com/threads/T-019bb5f7-b193-734c-b0a3-d97492c1d849
+- Installed shadcn chart component using `npx shadcn@latest add chart`
+- Recharts dependency (^2.15.4) installed in package.json
+- Files changed: resources/js/components/ui/chart.tsx, resources/js/components/ui/card.tsx (updated), package.json, package-lock.json
+- **Learnings for future iterations:**
+  - Use `npx shadcn@latest add chart --yes --overwrite` to avoid prompts
+  - Chart component exports: ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle
+  - Chart component uses Recharts as underlying library
+
+---
