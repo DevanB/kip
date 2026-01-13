@@ -52,3 +52,14 @@ Thread: https://ampcode.com/threads/T-019bb5f4-edd0-711d-a851-a607d2f715b3
   - Use `updateOrCreate` for seeding to ensure idempotency (see US-005)
 
 ---
+
+## 2026-01-13 - US-005
+Thread: https://ampcode.com/threads/T-019bb5f6-7682-7428-898e-3818c43e77ca
+- Created KpiTargetSeeder that seeds RTO and RPO targets of 60 minutes each
+- Uses updateOrCreate for idempotency (can run multiple times safely)
+- Files changed: database/seeders/KpiTargetSeeder.php
+- **Learnings for future iterations:**
+  - Run seeder with: `php artisan db:seed --class=KpiTargetSeeder`
+  - Default targets are both 60 minutes
+
+---
