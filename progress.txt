@@ -10,6 +10,7 @@
 - Widget components should use shadcn Card (CardHeader, CardTitle, CardDescription, CardContent)
 - Charts: Use ChartContainer + ChartConfig from shadcn/chart, colors via `var(--chart-N)` CSS vars
 - Recharts ReferenceLine: import from 'recharts', y={value} for horizontal, strokeDasharray for dashed style
+- Dashboard route requires auth; tests need `$this->actingAs(User::factory()->create())`
 
 ---
 
@@ -146,5 +147,20 @@ Thread: https://ampcode.com/threads/T-019bb76a-c36e-715b-902a-660de7352941
   - Recharts ReferenceLine: import from 'recharts', use y={value} for horizontal line, strokeDasharray for dashed
   - Label can be an object with value, position, fill, and fontSize properties
   - Use conditional rendering {prop !== undefined && <ReferenceLine ... />} for optional reference lines
+
+---
+
+## 2026-01-13 - US-012
+Thread: https://ampcode.com/threads/T-019bb76e-d3fe-727b-8194-8b44c9cfde10
+- Updated DashboardController to query real data from database
+- Controller queries latest DR test for RTO/RPO values using orderByDesc('test_date')
+- Controller queries all DR tests sorted by test_date for trend chart
+- Controller queries KpiTarget for both RTO and RPO targets (defaults to 60 if not set)
+- Created DashboardControllerTest with 4 tests verifying data wiring
+- Files changed: app/Http/Controllers/DashboardController.php, tests/Feature/DashboardControllerTest.php
+- **Learnings for future iterations:**
+  - Dashboard route requires authentication, use `$this->actingAs(User::factory()->create())` in tests
+  - Use `->map()` to transform Eloquent collection for frontend, formatting dates as strings
+  - KpiTarget::query()->where('kpi_type', 'rto')->value('target_minutes') returns single value
 
 ---
