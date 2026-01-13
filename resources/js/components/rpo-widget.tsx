@@ -1,10 +1,4 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface RpoWidgetProps {
     latestRpo: number | null;
@@ -34,39 +28,22 @@ export function RpoWidget({ latestRpo, targetRpo }: RpoWidgetProps) {
     const hasData = latestRpo !== null;
     const isAchieved = hasData && latestRpo <= targetRpo;
     const statusColor = hasData ? getStatusColor(latestRpo, targetRpo) : 'bg-muted';
-    const progressPercentage = hasData
-        ? getProgressPercentage(latestRpo, targetRpo)
-        : 0;
+    const progressPercentage = hasData ? getProgressPercentage(latestRpo, targetRpo) : 0;
 
     return (
         <Card className="h-full">
             <CardHeader className="pb-2">
                 <CardDescription>Recovery Point Objective</CardDescription>
-                <CardTitle className="text-4xl">
-                    {hasData ? `${latestRpo} min` : 'No data'}
-                </CardTitle>
+                <CardTitle className="text-4xl">{hasData ? `${latestRpo} min` : 'No data'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                    Target: {targetRpo} minutes
-                </div>
+                <div className="text-sm text-muted-foreground">Target: {targetRpo} minutes</div>
                 <div className="space-y-2">
                     <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                            className={`h-full transition-all ${statusColor}`}
-                            style={{ width: `${progressPercentage}%` }}
-                        />
+                        <div className={`h-full transition-all ${statusColor}`} style={{ width: `${progressPercentage}%` }} />
                     </div>
-                    {isAchieved && (
-                        <div className="text-sm font-medium text-green-600 dark:text-green-400">
-                            Target achieved!
-                        </div>
-                    )}
-                    {hasData && !isAchieved && (
-                        <div className="text-sm text-muted-foreground">
-                            {latestRpo - targetRpo} minutes over target
-                        </div>
-                    )}
+                    {isAchieved && <div className="text-sm font-medium text-green-600 dark:text-green-400">Target achieved!</div>}
+                    {hasData && !isAchieved && <div className="text-sm text-muted-foreground">{latestRpo - targetRpo} minutes over target</div>}
                 </div>
             </CardContent>
         </Card>

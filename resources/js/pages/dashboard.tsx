@@ -27,13 +27,7 @@ interface DashboardProps {
     testData?: TestDataPoint[];
 }
 
-export default function Dashboard({
-    latestRto = null,
-    targetRto = 60,
-    latestRpo = null,
-    targetRpo = 60,
-    testData = [],
-}: DashboardProps) {
+export default function Dashboard({ latestRto = null, targetRto = 60, latestRpo = null, targetRpo = 60, testData = [] }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="DR KPI Dashboard" />
@@ -43,7 +37,7 @@ export default function Dashboard({
                     <RtoWidget latestRto={latestRto} targetRto={targetRto} />
                     <RpoWidget latestRpo={latestRpo} targetRpo={targetRpo} />
                 </div>
-                <TrendChart data={testData} />
+                <TrendChart data={testData} rtoTarget={targetRto} rpoTarget={targetRpo} />
             </div>
         </AppLayout>
     );
