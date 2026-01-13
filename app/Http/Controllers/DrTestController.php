@@ -11,6 +11,25 @@ use Inertia\Response;
 
 class DrTestController extends Controller
 {
+    public function index(): Response
+    {
+        $drTests = DrTest::query()
+            ->withCount('phases')
+            ->orderByDesc('test_date')
+            ->get()
+            ->map(fn (DrTest $test) => [
+                'id' => $test->id,
+                'test_date' => $test->test_date->format('Y-m-d'),
+                'rto_minutes' => $test->rto_minutes,
+                'rpo_minutes' => $test->rpo_minutes,
+                'phases_count' => $test->phases_count,
+            ]);
+
+        return Inertia::render('dr-tests/index', [
+            'drTests' => $drTests,
+        ]);
+    }
+
     public function create(): Response
     {
         return Inertia::render('dr-tests/create');

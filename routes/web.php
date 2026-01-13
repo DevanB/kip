@@ -15,6 +15,7 @@ Route::middleware([
     ValidateSessionWithWorkOS::class,
 ])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dr-tests', [DrTestController::class, 'index'])->name('dr-tests.index');
     Route::get('dr-tests/create', [DrTestController::class, 'create'])->name('dr-tests.create');
     Route::post('dr-tests', [DrTestController::class, 'store'])->name('dr-tests.store');
 });

@@ -1,8 +1,58 @@
 <?php
 
 use App\Models\DrTest;
+use App\Models\DrTestPhase;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+
+it('renders the dr test history list', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/dr-tests')
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/index')
+            ->has('drTests')
+        );
+});
+
+it('displays dr tests sorted by date newest first', function () {
+    $this->actingAs(User::factory()->create());
+
+    $olderTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(2), 'phases')
+        ->create(['test_date' => '2026-01-10', 'rto_minutes' => 30, 'rpo_minutes' => 20]);
+
+    $newerTest = DrTest::factory()
+        ->has(DrTestPhase::factory()->count(3), 'phases')
+        ->create(['test_date' => '2026-01-15', 'rto_minutes' => 45, 'rpo_minutes' => 35]);
+
+    $this->get('/dr-tests')
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/index')
+            ->has('drTests', 2)
+            ->where('drTests.0.id', $newerTest->id)
+            ->where('drTests.0.test_date', '2026-01-15')
+            ->where('drTests.0.rto_minutes', 45)
+            ->where('drTests.0.rpo_minutes', 35)
+            ->where('drTests.0.phases_count', 3)
+            ->where('drTests.1.id', $olderTest->id)
+            ->where('drTests.1.test_date', '2026-01-10')
+            ->where('drTests.1.phases_count', 2)
+        );
+});
+
+it('displays empty state when no dr tests exist', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/dr-tests')
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('dr-tests/index')
+            ->has('drTests', 0)
+        );
+});
 
 it('renders the create dr test form', function () {
     $this->actingAs(User::factory()->create());
@@ -203,6 +253,9 @@ it('validates rpo_minutes is a positive integer', function () {
 });
 
 it('requires authentication', function () {
+    $this->get('/dr-tests')
+        ->assertRedirect();
+
     $this->get('/dr-tests/create')
         ->assertRedirect();
 
