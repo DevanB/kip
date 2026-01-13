@@ -18,6 +18,7 @@
 - Use `withCount('phases')` for eager counting relationships, accessed via `$model->phases_count`
 - Table component: Use shadcn table (TableHeader, TableBody, TableRow, TableCell, TableHead)
 - Delete with confirmation: Use shadcn AlertDialog with `router.delete(destroy(id).url)` pattern
+- Settings pages: Use SettingsLayout, add new pages to sidebarNavItems in layouts/settings/layout.tsx
 
 ---
 
@@ -278,5 +279,22 @@ Thread: https://ampcode.com/threads/T-019bb78c-0924-717b-8e67-eb055bb97259
   - Use shadcn AlertDialog for confirmation dialogs: AlertDialogTrigger wraps Button, AlertDialogAction handles the action
   - Delete pattern: `router.delete(destroy(id).url)` with Wayfinder action
   - Cascade deletes rely on migration `onDelete('cascade')` - no need to manually delete phases
+
+---
+
+## 2026-01-13 - US-020
+Thread: https://ampcode.com/threads/T-019bb78f-7f85-7081-b4d7-c7699b6a7028
+- Created KpiTargetController with edit and update methods in Settings namespace
+- Created UpdateKpiTargetRequest for validation (positive integers required)
+- Created settings/kpi-targets.tsx page with RTO and RPO target inputs
+- Added routes at /settings/kpi-targets (GET/PATCH)
+- Updated SettingsLayout to include KPI Targets link in sidebar nav
+- Created 10 tests covering rendering, updates, validation, and auth
+- Files changed: app/Http/Controllers/Settings/KpiTargetController.php, app/Http/Requests/UpdateKpiTargetRequest.php, resources/js/pages/settings/kpi-targets.tsx, resources/js/layouts/settings/layout.tsx, routes/settings.php, tests/Feature/KpiTargetControllerTest.php
+- **Learnings for future iterations:**
+  - Settings pages use SettingsLayout wrapper inside AppLayout
+  - Follow profile.tsx pattern for settings forms: `<Form {...action.form()}>` with `recentlySuccessful` transition
+  - Add new settings pages to sidebarNavItems array in layouts/settings/layout.tsx
+  - Use `updateOrCreate` pattern for KpiTarget to handle both create and update cases
 
 ---
