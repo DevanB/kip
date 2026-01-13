@@ -1,6 +1,6 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { RpoWidget } from '@/components/rpo-widget';
 import { RtoWidget } from '@/components/rto-widget';
+import { TrendChart } from '@/components/trend-chart';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -13,11 +13,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface TestDataPoint {
+    test_date: string;
+    rto_minutes: number;
+    rpo_minutes: number;
+}
+
 interface DashboardProps {
     latestRto?: number | null;
     targetRto?: number;
     latestRpo?: number | null;
     targetRpo?: number;
+    testData?: TestDataPoint[];
 }
 
 export default function Dashboard({
@@ -25,6 +32,7 @@ export default function Dashboard({
     targetRto = 60,
     latestRpo = null,
     targetRpo = 60,
+    testData = [],
 }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -35,12 +43,7 @@ export default function Dashboard({
                     <RtoWidget latestRto={latestRto} targetRto={targetRto} />
                     <RpoWidget latestRpo={latestRpo} targetRpo={targetRpo} />
                 </div>
-                <div className="relative min-h-80 flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    <span className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                        Trend Chart
-                    </span>
-                </div>
+                <TrendChart data={testData} />
             </div>
         </AppLayout>
     );
