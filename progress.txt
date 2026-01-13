@@ -17,6 +17,7 @@
 - Navigation buttons: Use `<Button asChild><Link href={action().url}>...</Link></Button>` pattern
 - Use `withCount('phases')` for eager counting relationships, accessed via `$model->phases_count`
 - Table component: Use shadcn table (TableHeader, TableBody, TableRow, TableCell, TableHead)
+- Delete with confirmation: Use shadcn AlertDialog with `router.delete(destroy(id).url)` pattern
 
 ---
 
@@ -261,5 +262,21 @@ Thread: https://ampcode.com/threads/T-019bb787-cb00-775b-a175-4b8e7823befe
   - Edit forms use `put(update(id).url)` pattern with Inertia's useForm
   - Phase datetime fields need `Y-m-d\TH:i` format for datetime-local inputs
   - Update strategy: delete all phases and recreate is simpler than tracking individual phase changes
+
+---
+
+## 2026-01-13 - US-019
+Thread: https://ampcode.com/threads/T-019bb78c-0924-717b-8e67-eb055bb97259
+- Added destroy method to DrTestController
+- Installed shadcn alert-dialog component for confirmation dialog
+- Updated show.tsx with Delete button that opens AlertDialog before deletion
+- Uses `router.delete(destroy(id).url)` pattern for SPA-style deletion
+- Cascade delete handles phases automatically (via migration foreign key constraint)
+- Added 3 tests: delete with phases cascade, 404 for non-existent, auth required
+- Files changed: app/Http/Controllers/DrTestController.php, resources/js/pages/dr-tests/show.tsx, resources/js/components/ui/alert-dialog.tsx (new), routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Use shadcn AlertDialog for confirmation dialogs: AlertDialogTrigger wraps Button, AlertDialogAction handles the action
+  - Delete pattern: `router.delete(destroy(id).url)` with Wayfinder action
+  - Cascade deletes rely on migration `onDelete('cascade')` - no need to manually delete phases
 
 ---
