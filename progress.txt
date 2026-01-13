@@ -298,3 +298,17 @@ Thread: https://ampcode.com/threads/T-019bb78f-7f85-7081-b4d7-c7699b6a7028
   - Use `updateOrCreate` pattern for KpiTarget to handle both create and update cases
 
 ---
+
+## 2026-01-13 - US-021
+Thread: https://ampcode.com/threads/T-019bb795-81fb-73c8-b09b-811ce77cdbaf
+- Added Settings and History navigation links to dashboard header
+- Settings link navigates to /settings/kpi-targets using Wayfinder kpiTargetsEdit route
+- History link navigates to /dr-tests using Wayfinder drTestsIndex route
+- Used Button with variant="outline" for secondary actions, primary button for Add DR Test
+- Files changed: resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Group related navigation buttons in a flex container with gap-2
+  - Use variant="outline" for secondary/navigation buttons, default for primary actions
+  - Import routes with aliases to avoid conflicts: `import { index as drTestsIndex } from '@/routes/dr-tests'`
+
+---
