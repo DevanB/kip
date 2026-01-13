@@ -11,6 +11,8 @@
 - Charts: Use ChartContainer + ChartConfig from shadcn/chart, colors via `var(--chart-N)` CSS vars
 - Recharts ReferenceLine: import from 'recharts', y={value} for horizontal, strokeDasharray for dashed style
 - Dashboard route requires auth; tests need `$this->actingAs(User::factory()->create())`
+- Page directories use kebab-case (e.g., `dr-tests/create.tsx`), not PascalCase
+- Use `store.form()` Wayfinder helper with Inertia `<Form>` component for form action/method
 
 ---
 
@@ -162,5 +164,21 @@ Thread: https://ampcode.com/threads/T-019bb76e-d3fe-727b-8194-8b44c9cfde10
   - Dashboard route requires authentication, use `$this->actingAs(User::factory()->create())` in tests
   - Use `->map()` to transform Eloquent collection for frontend, formatting dates as strings
   - KpiTarget::query()->where('kpi_type', 'rto')->value('target_minutes') returns single value
+
+---
+
+## 2026-01-13 - US-013
+Thread: https://ampcode.com/threads/T-019bb771-9e9d-7000-aebd-154bc8247589
+- Created DrTestController with create and store methods
+- Created StoreDrTestRequest FormRequest for validation
+- Created dr-tests/create.tsx Inertia page with form for test_date, rto_minutes, rpo_minutes, notes
+- Added routes at /dr-tests/create (GET) and /dr-tests (POST)
+- Created DrTestControllerTest with 7 test cases covering CRUD and validation
+- Files changed: app/Http/Controllers/DrTestController.php, app/Http/Requests/StoreDrTestRequest.php, resources/js/pages/dr-tests/create.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Pages directory uses lowercase: `dr-tests/create` not `DrTests/Create`
+  - Date fields in database include time (00:00:00), compare using Carbon format() in tests
+  - Use Form component from @inertiajs/react with store.form() pattern for Wayfinder integration
+  - Textarea doesn't have shadcn component, use plain textarea with matching styles
 
 ---
