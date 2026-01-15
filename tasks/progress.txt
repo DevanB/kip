@@ -1,0 +1,21 @@
+## Codebase Patterns
+- Use `php artisan make:migration create_xxx_table --no-interaction` to create migrations
+- Migrations use anonymous class pattern: `return new class extends Migration`
+- Foreign keys use `$table->foreignId('xxx_id')->constrained()->cascadeOnDelete()` pattern
+- Quality checks: `vendor/bin/pint --dirty`, `npm run types`, `npm run build`
+- Pre-existing issue: tests fail due to missing APP_KEY in test environment
+- Pre-existing issue: welcome.tsx has unused @ts-expect-error directive causing type error
+---
+
+## 2026-01-13 05:59 UTC - US-001
+Thread: https://ampcode.com/threads/T-019bb5ee-9117-75cf-b062-092cf93bced7
+- Created `dr_tests` migration with: id, test_date (date), rto_minutes (integer), rpo_minutes (integer), notes (text nullable), timestamps
+- Created `dr_test_phases` migration with: id, dr_test_id (FK to dr_tests with cascade delete), title (string), started_at (datetime), finished_at (datetime), duration_minutes (integer), timestamps
+- Files changed:
+  - database/migrations/2026_01_13_055818_create_dr_tests_table.php
+  - database/migrations/2026_01_13_055818_create_dr_test_phases_table.php
+- **Learnings for future iterations:**
+  - SQLite allows FK constraints to pass even if referenced table migration runs later (deferred FK checks)
+  - The codebase has pre-existing typecheck error in welcome.tsx and tests fail due to missing APP_KEY
+---
+

@@ -1,0 +1,314 @@
+## Codebase Patterns
+- Use `casts()` method on models rather than `$casts` property (Laravel 12 convention)
+- Use PHP 8 generic type hints for relationships: `HasMany<ChildModel, $this>`
+- Run `vendor/bin/pint --dirty` for PHP formatting
+- Run `npm run build` to verify TypeScript/frontend compiles
+- Models need `use HasFactory` trait for factories to work
+- Carbon `diffInMinutes()` returns float, cast to int when comparing
+- Inertia pages use lowercase names (e.g., 'dashboard' not 'Dashboard')
+- Run `php artisan wayfinder:generate` after adding/changing controllers
+- Widget components should use shadcn Card (CardHeader, CardTitle, CardDescription, CardContent)
+- Charts: Use ChartContainer + ChartConfig from shadcn/chart, colors via `var(--chart-N)` CSS vars
+- Recharts ReferenceLine: import from 'recharts', y={value} for horizontal, strokeDasharray for dashed style
+- Dashboard route requires auth; tests need `$this->actingAs(User::factory()->create())`
+- Page directories use kebab-case (e.g., `dr-tests/create.tsx`), not PascalCase
+- Use `store.form()` Wayfinder helper with Inertia `<Form>` component for form action/method
+- For dynamic array forms, use Inertia's `useForm` hook with `post(store().url)` pattern
+- Navigation buttons: Use `<Button asChild><Link href={action().url}>...</Link></Button>` pattern
+- Use `withCount('phases')` for eager counting relationships, accessed via `$model->phases_count`
+- Table component: Use shadcn table (TableHeader, TableBody, TableRow, TableCell, TableHead)
+- Delete with confirmation: Use shadcn AlertDialog with `router.delete(destroy(id).url)` pattern
+- Settings pages: Use SettingsLayout, add new pages to sidebarNavItems in layouts/settings/layout.tsx
+
+---
+
+## 2026-01-13 - US-001
+Thread: (Previous iteration - no thread URL)
+- Created migrations for `dr_tests` and `dr_test_phases` tables
+- Files changed: database/migrations/*_create_dr_tests_table.php, database/migrations/*_create_dr_test_phases_table.php
+- **Learnings for future iterations:**
+  - dr_test_phases has cascade delete on dr_test_id foreign key
+  - duration_minutes is stored as integer, not calculated
+
+---
+
+## 2026-01-13 - US-002
+Thread: https://ampcode.com/threads/T-019bb5f0-d413-747f-ab35-6a0fbe741499
+- Created DrTest and DrTestPhase Eloquent models with proper relationships
+- Files changed: app/Models/DrTest.php, app/Models/DrTestPhase.php
+- **Learnings for future iterations:**
+  - DrTest->phases() returns HasMany relationship
+  - DrTestPhase->drTest() returns BelongsTo relationship
+  - test_date is cast to date, started_at/finished_at are cast to datetime
+
+---
+
+## 2026-01-13 - US-003
+Thread: https://ampcode.com/threads/T-019bb5f2-9b03-7282-a27a-19bda71eb2cd
+- Created DrTestFactory and DrTestPhaseFactory with realistic fake data
+- Added HasFactory trait to DrTest and DrTestPhase models
+- Created DrTestFactoryTest with 4 test cases to verify factory behavior
+- Files changed: database/factories/DrTestFactory.php, database/factories/DrTestPhaseFactory.php, app/Models/DrTest.php, app/Models/DrTestPhase.php, tests/Feature/DrTestFactoryTest.php
+- **Learnings for future iterations:**
+  - DrTestPhaseFactory generates duration_minutes by calculating from started_at and finished_at difference
+  - Use `DrTestPhase::factory()->for($drTest)` to link phase to existing test
+  - Use `DrTest::factory()->has(DrTestPhase::factory()->count(3), 'phases')` to create test with phases
+
+---
+
+## 2026-01-13 - US-004
+Thread: https://ampcode.com/threads/T-019bb5f4-edd0-711d-a851-a607d2f715b3
+- Created kpi_targets migration with kpi_type (unique string) and target_minutes (integer) columns
+- Created KpiTarget Eloquent model with fillable fields
+- Files changed: database/migrations/2026_01_13_060459_create_kpi_targets_table.php, app/Models/KpiTarget.php
+- **Learnings for future iterations:**
+  - kpi_type values should be 'rto' or 'rpo'
+  - Use `updateOrCreate` for seeding to ensure idempotency (see US-005)
+
+---
+
+## 2026-01-13 - US-005
+Thread: https://ampcode.com/threads/T-019bb5f6-7682-7428-898e-3818c43e77ca
+- Created KpiTargetSeeder that seeds RTO and RPO targets of 60 minutes each
+- Uses updateOrCreate for idempotency (can run multiple times safely)
+- Files changed: database/seeders/KpiTargetSeeder.php
+- **Learnings for future iterations:**
+  - Run seeder with: `php artisan db:seed --class=KpiTargetSeeder`
+  - Default targets are both 60 minutes
+
+---
+
+## 2026-01-13 - US-006
+Thread: https://ampcode.com/threads/T-019bb5f7-b193-734c-b0a3-d97492c1d849
+- Installed shadcn chart component using `npx shadcn@latest add chart`
+- Recharts dependency (^2.15.4) installed in package.json
+- Files changed: resources/js/components/ui/chart.tsx, resources/js/components/ui/card.tsx (updated), package.json, package-lock.json
+- **Learnings for future iterations:**
+  - Use `npx shadcn@latest add chart --yes --overwrite` to avoid prompts
+  - Chart component exports: ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle
+  - Chart component uses Recharts as underlying library
+
+---
+
+## 2026-01-13 - US-007
+Thread: https://ampcode.com/threads/T-019bb5f9-0c3b-7199-9aa8-edf16a21e902
+- Created DashboardController with index method that renders 'dashboard' Inertia page
+- Updated dashboard.tsx with "DR KPI Dashboard" title and responsive 2-column grid layout
+- Updated routes/web.php to use DashboardController instead of inline closure
+- Files changed: app/Http/Controllers/DashboardController.php (new), resources/js/pages/dashboard.tsx, routes/web.php
+- **Learnings for future iterations:**
+  - This codebase uses lowercase page names (e.g., 'dashboard' not 'Dashboard')
+  - Existing dashboard uses AppLayout with breadcrumbs pattern
+  - Wayfinder auto-generates actions on `php artisan wayfinder:generate`
+  - Browser testing requires dev server running (Herd site needs to be parked/linked)
+
+---
+
+## 2026-01-13 - US-008
+Thread: https://ampcode.com/threads/T-019bb5fc-ab40-7564-a859-c99a6006715c
+- Created RtoWidget component with progress bar, color coding, and target achieved message
+- Integrated RtoWidget into dashboard.tsx with DashboardProps interface
+- Created .env.testing file to fix test environment
+- Files changed: resources/js/components/rto-widget.tsx (new), resources/js/pages/dashboard.tsx, .env.testing (new)
+- **Learnings for future iterations:**
+  - Widget components should use Card from shadcn/ui for consistent styling
+  - getStatusColor logic: green <= target, yellow within 50% above, red > 50% above
+  - Progress percentage calculation: 100% when at/below target, decreases as value exceeds target
+  - Dashboard props should use defaults (e.g., `targetRto = 60`) for standalone testing
+
+---
+
+## 2026-01-13 - US-009
+Thread: https://ampcode.com/threads/T-019bb5ff-5afc-7795-a0bc-996bae8c3d2d
+- Created RpoWidget component mirroring RtoWidget structure
+- Updated dashboard.tsx to include RpoWidget with latestRpo/targetRpo props
+- Files changed: resources/js/components/rpo-widget.tsx (new), resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - RpoWidget and RtoWidget share identical status color/progress logic - could extract to shared utility
+  - Dashboard props interface extended with latestRpo and targetRpo (both optional with defaults)
+
+---
+
+## 2026-01-13 - US-010
+Thread: https://ampcode.com/threads/T-019bb601-13d2-749a-a774-c4fa7b8e5c9c
+- Created TrendChart component using shadcn chart with Recharts LineChart
+- Displays RTO (blue/chart-1) and RPO (orange/chart-2) lines over time
+- Interactive tooltips show values on hover, empty state when no data
+- Integrated TrendChart into dashboard.tsx, replacing placeholder
+- Files changed: resources/js/components/trend-chart.tsx (new), resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Use ChartContainer with ChartConfig for shadcn chart integration
+  - chartConfig uses `var(--chart-1)` and `var(--chart-2)` CSS variables for colors
+  - TestDataPoint interface: { test_date: string, rto_minutes: number, rpo_minutes: number }
+  - LineChart needs accessibilityLayer prop for a11y compliance
+
+---
+
+## 2026-01-13 - US-011
+Thread: https://ampcode.com/threads/T-019bb76a-c36e-715b-902a-660de7352941
+- Added target reference lines to TrendChart component using Recharts ReferenceLine
+- TrendChart now accepts rtoTarget and rpoTarget props (optional)
+- Reference lines are horizontal, dashed (strokeDasharray="5 5"), and labeled with target values
+- Dashboard passes targetRto and targetRpo to TrendChart for display
+- Files changed: resources/js/components/trend-chart.tsx, resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Recharts ReferenceLine: import from 'recharts', use y={value} for horizontal line, strokeDasharray for dashed
+  - Label can be an object with value, position, fill, and fontSize properties
+  - Use conditional rendering {prop !== undefined && <ReferenceLine ... />} for optional reference lines
+
+---
+
+## 2026-01-13 - US-012
+Thread: https://ampcode.com/threads/T-019bb76e-d3fe-727b-8194-8b44c9cfde10
+- Updated DashboardController to query real data from database
+- Controller queries latest DR test for RTO/RPO values using orderByDesc('test_date')
+- Controller queries all DR tests sorted by test_date for trend chart
+- Controller queries KpiTarget for both RTO and RPO targets (defaults to 60 if not set)
+- Created DashboardControllerTest with 4 tests verifying data wiring
+- Files changed: app/Http/Controllers/DashboardController.php, tests/Feature/DashboardControllerTest.php
+- **Learnings for future iterations:**
+  - Dashboard route requires authentication, use `$this->actingAs(User::factory()->create())` in tests
+  - Use `->map()` to transform Eloquent collection for frontend, formatting dates as strings
+  - KpiTarget::query()->where('kpi_type', 'rto')->value('target_minutes') returns single value
+
+---
+
+## 2026-01-13 - US-013
+Thread: https://ampcode.com/threads/T-019bb771-9e9d-7000-aebd-154bc8247589
+- Created DrTestController with create and store methods
+- Created StoreDrTestRequest FormRequest for validation
+- Created dr-tests/create.tsx Inertia page with form for test_date, rto_minutes, rpo_minutes, notes
+- Added routes at /dr-tests/create (GET) and /dr-tests (POST)
+- Created DrTestControllerTest with 7 test cases covering CRUD and validation
+- Files changed: app/Http/Controllers/DrTestController.php, app/Http/Requests/StoreDrTestRequest.php, resources/js/pages/dr-tests/create.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Pages directory uses lowercase: `dr-tests/create` not `DrTests/Create`
+  - Date fields in database include time (00:00:00), compare using Carbon format() in tests
+  - Use Form component from @inertiajs/react with store.form() pattern for Wayfinder integration
+  - Textarea doesn't have shadcn component, use plain textarea with matching styles
+
+---
+
+## 2026-01-13 - US-014
+Thread: https://ampcode.com/threads/T-019bb775-d006-74ae-9e1f-f46311c2b208
+- Added dynamic phases section to DR test form with add/remove phase functionality
+- Updated StoreDrTestRequest to validate phases array with title, started_at, finished_at per phase
+- Updated DrTestController to save phases to dr_test_phases table with calculated duration
+- Frontend shows auto-calculated duration when both times are set
+- Updated DrTestControllerTest with 10 test cases covering phases validation
+- Files changed: resources/js/pages/dr-tests/create.tsx, app/Http/Requests/StoreDrTestRequest.php, app/Http/Controllers/DrTestController.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Carbon `$start->diffInMinutes($end)` returns positive value (absolute difference from start to end)
+  - Use `useForm` from Inertia for complex forms with dynamic arrays instead of `<Form>` component
+  - Nested validation rules: `phases.*.title`, `phases.*.started_at`, etc.
+  - Use `after_or_equal:phases.*.started_at` for end time validation against start time in same array item
+
+---
+
+## 2026-01-13 - US-015
+Thread: https://ampcode.com/threads/T-019bb779-ac52-74a8-b198-0d6ee15c0517
+- Added "Add DR Test" button to dashboard that navigates to /dr-tests/create
+- Uses Button component with asChild wrapping Inertia Link for SPA navigation
+- Uses Wayfinder `create()` action for type-safe route URL generation
+- DrTestController store method already redirects to dashboard route on success
+- Files changed: resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Use `Button asChild` with `Link` inside for styled navigation buttons
+  - Import Wayfinder controller actions: `import { create } from '@/actions/App/Http/Controllers/DrTestController'`
+  - Call action to get URL: `create().url`
+
+---
+
+## 2026-01-13 - US-016
+Thread: https://ampcode.com/threads/T-019bb77f-4210-73a1-afe2-07dbac3319f7
+- Created DrTestController index method with withCount('phases') for eager counting
+- Created dr-tests/index.tsx page with shadcn Table component
+- Added route at /dr-tests for history list
+- Installed shadcn table component
+- Added 3 tests for index route: renders list, sorts by date (newest first), empty state
+- Files changed: app/Http/Controllers/DrTestController.php, resources/js/pages/dr-tests/index.tsx, resources/js/components/ui/table.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Use `withCount('relationship')` to eager load relationship count, accessed via `$model->relationship_count`
+  - Import Wayfinder route: `import { index } from '@/routes/dr-tests'`
+  - Table rows are simple - no link to detail view yet (US-017 will add that)
+
+---
+
+## 2026-01-13 - US-017
+Thread: https://ampcode.com/threads/T-019bb784-bad5-77fa-b3fa-e691ec231065
+- Created DrTestController show method with eager loading of phases
+- Created dr-tests/show.tsx page component displaying test details and phases table
+- Added route at /dr-tests/{drTest} for detail view
+- Updated index.tsx with clickable links from history list to detail view
+- Added 3 tests: renders detail view, displays phases correctly, returns 404 for non-existent test
+- Files changed: app/Http/Controllers/DrTestController.php, resources/js/pages/dr-tests/show.tsx, resources/js/pages/dr-tests/index.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Use route model binding with `DrTest $drTest` for automatic 404 on non-existent records
+  - Import Wayfinder route with `show(id).url` pattern: `import { show } from '@/routes/dr-tests'`
+  - Dynamic breadcrumbs: create inside component function, not as module constant
+
+---
+
+## 2026-01-13 - US-018
+Thread: https://ampcode.com/threads/T-019bb787-cb00-775b-a175-4b8e7823befe
+- Added edit and update methods to DrTestController
+- Created UpdateDrTestRequest with same validation rules as StoreDrTestRequest
+- Created dr-tests/edit.tsx page component with pre-populated form data
+- Added routes: GET /dr-tests/{drTest}/edit and PUT /dr-tests/{drTest}
+- Added Edit button to show.tsx detail view with Pencil icon
+- Update method deletes all existing phases and recreates them (simpler than tracking changes)
+- Added 5 tests covering edit rendering, update flow, phase replacement, validation, and 404
+- Files changed: app/Http/Controllers/DrTestController.php, app/Http/Requests/UpdateDrTestRequest.php, resources/js/pages/dr-tests/edit.tsx, resources/js/pages/dr-tests/show.tsx, routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Edit forms use `put(update(id).url)` pattern with Inertia's useForm
+  - Phase datetime fields need `Y-m-d\TH:i` format for datetime-local inputs
+  - Update strategy: delete all phases and recreate is simpler than tracking individual phase changes
+
+---
+
+## 2026-01-13 - US-019
+Thread: https://ampcode.com/threads/T-019bb78c-0924-717b-8e67-eb055bb97259
+- Added destroy method to DrTestController
+- Installed shadcn alert-dialog component for confirmation dialog
+- Updated show.tsx with Delete button that opens AlertDialog before deletion
+- Uses `router.delete(destroy(id).url)` pattern for SPA-style deletion
+- Cascade delete handles phases automatically (via migration foreign key constraint)
+- Added 3 tests: delete with phases cascade, 404 for non-existent, auth required
+- Files changed: app/Http/Controllers/DrTestController.php, resources/js/pages/dr-tests/show.tsx, resources/js/components/ui/alert-dialog.tsx (new), routes/web.php, tests/Feature/DrTestControllerTest.php
+- **Learnings for future iterations:**
+  - Use shadcn AlertDialog for confirmation dialogs: AlertDialogTrigger wraps Button, AlertDialogAction handles the action
+  - Delete pattern: `router.delete(destroy(id).url)` with Wayfinder action
+  - Cascade deletes rely on migration `onDelete('cascade')` - no need to manually delete phases
+
+---
+
+## 2026-01-13 - US-020
+Thread: https://ampcode.com/threads/T-019bb78f-7f85-7081-b4d7-c7699b6a7028
+- Created KpiTargetController with edit and update methods in Settings namespace
+- Created UpdateKpiTargetRequest for validation (positive integers required)
+- Created settings/kpi-targets.tsx page with RTO and RPO target inputs
+- Added routes at /settings/kpi-targets (GET/PATCH)
+- Updated SettingsLayout to include KPI Targets link in sidebar nav
+- Created 10 tests covering rendering, updates, validation, and auth
+- Files changed: app/Http/Controllers/Settings/KpiTargetController.php, app/Http/Requests/UpdateKpiTargetRequest.php, resources/js/pages/settings/kpi-targets.tsx, resources/js/layouts/settings/layout.tsx, routes/settings.php, tests/Feature/KpiTargetControllerTest.php
+- **Learnings for future iterations:**
+  - Settings pages use SettingsLayout wrapper inside AppLayout
+  - Follow profile.tsx pattern for settings forms: `<Form {...action.form()}>` with `recentlySuccessful` transition
+  - Add new settings pages to sidebarNavItems array in layouts/settings/layout.tsx
+  - Use `updateOrCreate` pattern for KpiTarget to handle both create and update cases
+
+---
+
+## 2026-01-13 - US-021
+Thread: https://ampcode.com/threads/T-019bb795-81fb-73c8-b09b-811ce77cdbaf
+- Added Settings and History navigation links to dashboard header
+- Settings link navigates to /settings/kpi-targets using Wayfinder kpiTargetsEdit route
+- History link navigates to /dr-tests using Wayfinder drTestsIndex route
+- Used Button with variant="outline" for secondary actions, primary button for Add DR Test
+- Files changed: resources/js/pages/dashboard.tsx
+- **Learnings for future iterations:**
+  - Group related navigation buttons in a flex container with gap-2
+  - Use variant="outline" for secondary/navigation buttons, default for primary actions
+  - Import routes with aliases to avoid conflicts: `import { index as drTestsIndex } from '@/routes/dr-tests'`
+
+---
