@@ -355,3 +355,18 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Controller methods use redirect()->back() for form submissions (standard Laravel pattern)
   - Paginate returns proper JSON structure with 'data' key
   - Tests require $this->actingAs(User::factory()->create()) for auth middleware
+
+## 2026-01-16 - US-004
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Registered all developer routes: GET /developers (index), GET /developers/{developer} (show), POST /developers (store), PUT /developers/{developer} (update), DELETE /developers/{developer} (destroy)
+- Added show() method to DeveloperController that returns single developer as JSON
+- All routes are properly authenticated via auth middleware
+- All routes use correct HTTP methods and route model binding for developer parameter
+- Added test for show route to verify it returns correct developer data
+- All tests pass (74 tests), typecheck passes, build passes
+- Files changed: app/Http/Controllers/DeveloperController.php, routes/web.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - Routes are registered in routes/web.php authenticated group for auth protection
+  - Route model binding automatically resolves {developer} to Developer model instance
+  - Show method returns single developer as JSON using response()->json()
+  - All CRUD routes now have comprehensive test coverage

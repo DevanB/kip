@@ -4,22 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DeveloperFormRequest;
 use App\Models\Developer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DeveloperController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(): Response
     {
         $developers = Developer::query()
-            ->paginate(15);
+            ->get()
+            ->map(fn (Developer $dev) => [
+                'id' => $dev->id,
+                'name' => $dev->name,
+                'email' => $dev->email,
+                'github_username' => $dev->github_username,
+                'gitlab_username' => $dev->gitlab_username,
+            ]);
 
-        return response()->json($developers);
+        return Inertia::render('developers/index', [
+            'developers' => $developers,
+        ]);
     }
 
-    public function show(Developer $developer): JsonResponse
+    public function show(Developer $developer): Response
     {
-        return response()->json($developer);
+        return Inertia::render('developers/show', [
+            'developer' => [
+                'id' => $developer->id,
+                'name' => $developer->name,
+                'email' => $developer->email,
+                'github_username' => $developer->github_username,
+                'gitlab_username' => $developer->gitlab_username,
+            ],
+        ]);
     }
 
     public function store(DeveloperFormRequest $request): RedirectResponse

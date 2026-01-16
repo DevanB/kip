@@ -3,30 +3,31 @@
 use App\Models\Developer;
 use App\Models\User;
 
-it('returns paginated list of developers', function () {
+it('displays developers list page', function () {
     $this->actingAs(User::factory()->create());
-    Developer::factory()->count(20)->create();
+    Developer::factory()->count(5)->create();
 
     $response = $this->get('/developers');
 
-    $response->assertSuccessful();
-
-    $data = $response->json();
-    expect($data)->toHaveKey('data')
-        ->and(count($data['data']))->toBe(15)
-        ->and($data['data'][0])->toHaveKeys(['id', 'name', 'email']);
+    $response->assertOk();
+    $response->assertInertia(
+        fn ($page) => $page
+            ->component('developers/index')
+            ->has('developers', 5)
+    );
 });
 
-it('returns single developer by ID', function () {
+it('displays empty state when no developers', function () {
     $this->actingAs(User::factory()->create());
-    $developer = Developer::factory()->create();
 
-    $response = $this->get("/developers/{$developer->id}");
+    $response = $this->get('/developers');
 
-    $response->assertSuccessful();
-    expect($response->json('id'))->toBe($developer->id)
-        ->and($response->json('name'))->toBe($developer->name)
-        ->and($response->json('email'))->toBe($developer->email);
+    $response->assertOk();
+    $response->assertInertia(
+        fn ($page) => $page
+            ->component('developers/index')
+            ->has('developers', 0)
+    );
 });
 
 it('creates developer with valid data', function () {
