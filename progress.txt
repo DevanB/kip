@@ -312,3 +312,125 @@ Thread: https://ampcode.com/threads/T-019bb795-81fb-73c8-b09b-811ce77cdbaf
   - Import routes with aliases to avoid conflicts: `import { index as drTestsIndex } from '@/routes/dr-tests'`
 
 ---
+
+## 2026-01-16 - US-001
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created developers table with columns: id, name, email, github_username, gitlab_username, timestamps
+- Added unique constraint on email column
+- Created Developer Eloquent model with HasFactory trait and fillable attributes
+- Created DeveloperFactory with realistic fake data using Faker
+- Migration runs successfully, all tests pass, typecheck passes
+- Files changed: database/migrations/2026_01_16_133926_create_developers_table.php, app/Models/Developer.php, database/factories/DeveloperFactory.php
+- **Learnings for future iterations:**
+  - Developer model follows existing conventions: HasFactory trait, fillable array, email is unique
+  - DeveloperFactory uses fake()->unique()->email() to ensure unique emails across factory calls
+  - github_username and gitlab_username are optional (nullable) with 70% generation rate via fake()->optional()
+
+## 2026-01-16 - US-002
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created comprehensive test suite for Developer model with 11 test cases
+- Tests verify: name/email required, email uniqueness, optional usernames, duplicate usernames allowed, casing preserved
+- All tests pass, typecheck passes
+- Files changed: tests/Feature/DeveloperTest.php
+- **Learnings for future iterations:**
+  - Developer model enforces NOT NULL constraints on name and email at database level
+  - Email uniqueness is enforced at database level with unique index
+  - GitHub/GitLab usernames can be null and may duplicate (no unique constraints)
+  - All fields preserve casing - no case normalization applied
+
+## 2026-01-16 - US-003
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created DeveloperController with index, store, update, destroy methods for CRUD operations
+- Created DeveloperFormRequest with comprehensive validation rules and user-friendly error messages
+- Index endpoint returns paginated list (15 per page) with proper JSON response
+- Store/Update endpoints use DeveloperFormRequest validation and redirect after success
+- Update endpoint uses Rule::unique() with ignore() to allow email unchanged
+- Destroy endpoint deletes developers via route model binding
+- Created 13 comprehensive test cases covering all CRUD operations, validation, edge cases
+- All tests pass, typecheck passes, pint formatting passes
+- Files changed: app/Http/Controllers/DeveloperController.php, app/Http/Requests/DeveloperFormRequest.php, tests/Feature/DeveloperControllerTest.php, routes/web.php
+- **Learnings for future iterations:**
+  - DeveloperFormRequest uses Rule::unique('developers', 'email')->ignore($developerId) for email uniqueness with update support
+  - All validation messages are user-friendly (not cryptic validation rule names)
+  - Controller methods use redirect()->back() for form submissions (standard Laravel pattern)
+  - Paginate returns proper JSON structure with 'data' key
+  - Tests require $this->actingAs(User::factory()->create()) for auth middleware
+
+## 2026-01-16 - US-004
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Registered all developer routes: GET /developers (index), GET /developers/{developer} (show), POST /developers (store), PUT /developers/{developer} (update), DELETE /developers/{developer} (destroy)
+- Added show() method to DeveloperController that returns single developer as JSON
+- All routes are properly authenticated via auth middleware
+- All routes use correct HTTP methods and route model binding for developer parameter
+- Added test for show route to verify it returns correct developer data
+- All tests pass (74 tests), typecheck passes, build passes
+- Files changed: app/Http/Controllers/DeveloperController.php, routes/web.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - Routes are registered in routes/web.php authenticated group for auth protection
+  - Route model binding automatically resolves {developer} to Developer model instance
+  - Show method returns single developer as JSON using response()->json()
+  - All CRUD routes now have comprehensive test coverage
+
+## 2026-01-16 - US-005
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created developers/index.tsx React component using Inertia
+- Displays table with columns: name, email, github_username, gitlab_username
+- Shows empty state with message when no developers exist
+- Includes "Add Developer" button that links to /developers/create
+- Updated DeveloperController index() method to return Inertia::render() with developers list
+- Used Table component from shadcn/ui with AppLayout wrapper
+- All tests pass, frontend build passes
+- Files changed: resources/js/pages/developers/index.tsx, app/Http/Controllers/DeveloperController.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - DeveloperController.index() returns Inertia page, not JSON
+  - Page name uses lowercase kebab-case: developers/index (not Developers/Index)
+  - Table rows map over developers array and display properties with null fallback ('-')
+  - Empty state uses centered text with muted-foreground color
+  - All developers loaded at once (no pagination for UI currently)
+
+## 2026-01-16 - US-006
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created DeveloperForm.tsx reusable form component with fields for name, email, github_username, gitlab_username
+- Created Create.tsx page that shows form for creating new developers
+- Created Edit.tsx page that shows form with pre-populated developer data
+- Added create() and edit() methods to DeveloperController for rendering pages
+- Form uses Inertia Form component with Wayfinder route integration (store/update)
+- Added routes: GET /developers/create, GET /developers/{developer}/edit
+- All tests pass (76 tests), frontend builds successfully
+- Files changed: resources/js/pages/developers/form.tsx (new), resources/js/pages/developers/create.tsx (new), resources/js/pages/developers/edit.tsx (new), app/Http/Controllers/DeveloperController.php, routes/web.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - DeveloperForm is reusable component that takes initialData and isEditing flag
+  - Form uses Wayfinder routes: store().url and update(id).url for form action
+  - Create page renders form without initial data (new record)
+  - Edit page loads developer data and renders form with isEditing=true
+  - Routes should come before {developer} catch-all to avoid matching /create as a developer ID
+
+## 2026-01-16 - US-007
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Added delete button to developers index table in Actions column
+- Delete button uses AlertDialog from shadcn/ui for confirmation
+- Confirmation dialog shows developer name
+- Uses router.delete(destroy(id).url) for SPA-style deletion
+- Delete happens without page refresh via Inertia
+- All tests pass, frontend builds successfully
+- Files changed: resources/js/pages/developers/index.tsx
+- **Learnings for future iterations:**
+  - AlertDialog works with state management for showing/hiding per row
+  - Use open prop with onOpenChange for controlled dialog behavior
+  - Delete via router.delete() with Wayfinder destroy route
+  - Keep dialog state separate to avoid multiple confirmations
+
+## 2026-01-16 - US-008
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Added Developers navigation link to AppSidebar in mainNavItems array
+- Added DR Tests link alongside for consistency
+- Uses Users and BarChart3 icons from lucide-react
+- Links use Wayfinder routes for type-safe navigation
+- Active state and styling handled by NavMain component
+- All tests pass, frontend builds successfully
+- Files changed: resources/js/components/app-sidebar.tsx
+- **Learnings for future iterations:**
+  - Navigation items in AppSidebar use NavItem type with title, href, icon
+  - href property expects a Wayfinder route object
+  - Import specific route functions from their respective route files to avoid conflicts
+  - NavMain component automatically handles active state and styling

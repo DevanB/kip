@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DrTestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +23,14 @@ Route::middleware([
     Route::post('dr-tests', [DrTestController::class, 'store'])->name('dr-tests.store');
     Route::put('dr-tests/{drTest}', [DrTestController::class, 'update'])->name('dr-tests.update');
     Route::delete('dr-tests/{drTest}', [DrTestController::class, 'destroy'])->name('dr-tests.destroy');
+
+    Route::get('developers', [DeveloperController::class, 'index'])->name('developers.index');
+    Route::get('developers/create', [DeveloperController::class, 'create'])->name('developers.create');
+    Route::get('developers/{developer}', [DeveloperController::class, 'show'])->name('developers.show');
+    Route::get('developers/{developer}/edit', [DeveloperController::class, 'edit'])->name('developers.edit');
+    Route::post('developers', [DeveloperController::class, 'store'])->name('developers.store');
+    Route::put('developers/{developer}', [DeveloperController::class, 'update'])->name('developers.update');
+    Route::delete('developers/{developer}', [DeveloperController::class, 'destroy'])->name('developers.destroy');
 });
 
 require __DIR__.'/settings.php';
