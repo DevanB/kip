@@ -419,3 +419,18 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Use open prop with onOpenChange for controlled dialog behavior
   - Delete via router.delete() with Wayfinder destroy route
   - Keep dialog state separate to avoid multiple confirmations
+
+## 2026-01-16 - US-008
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Added Developers navigation link to AppSidebar in mainNavItems array
+- Added DR Tests link alongside for consistency
+- Uses Users and BarChart3 icons from lucide-react
+- Links use Wayfinder routes for type-safe navigation
+- Active state and styling handled by NavMain component
+- All tests pass, frontend builds successfully
+- Files changed: resources/js/components/app-sidebar.tsx
+- **Learnings for future iterations:**
+  - Navigation items in AppSidebar use NavItem type with title, href, icon
+  - href property expects a Wayfinder route object
+  - Import specific route functions from their respective route files to avoid conflicts
+  - NavMain component automatically handles active state and styling
