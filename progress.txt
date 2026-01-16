@@ -312,3 +312,16 @@ Thread: https://ampcode.com/threads/T-019bb795-81fb-73c8-b09b-811ce77cdbaf
   - Import routes with aliases to avoid conflicts: `import { index as drTestsIndex } from '@/routes/dr-tests'`
 
 ---
+
+## 2026-01-16 - US-001
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created developers table with columns: id, name, email, github_username, gitlab_username, timestamps
+- Added unique constraint on email column
+- Created Developer Eloquent model with HasFactory trait and fillable attributes
+- Created DeveloperFactory with realistic fake data using Faker
+- Migration runs successfully, all tests pass, typecheck passes
+- Files changed: database/migrations/2026_01_16_133926_create_developers_table.php, app/Models/Developer.php, database/factories/DeveloperFactory.php
+- **Learnings for future iterations:**
+  - Developer model follows existing conventions: HasFactory trait, fillable array, email is unique
+  - DeveloperFactory uses fake()->unique()->email() to ensure unique emails across factory calls
+  - github_username and gitlab_username are optional (nullable) with 70% generation rate via fake()->optional()
