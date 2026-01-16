@@ -387,3 +387,20 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Table rows map over developers array and display properties with null fallback ('-')
   - Empty state uses centered text with muted-foreground color
   - All developers loaded at once (no pagination for UI currently)
+
+## 2026-01-16 - US-006
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created DeveloperForm.tsx reusable form component with fields for name, email, github_username, gitlab_username
+- Created Create.tsx page that shows form for creating new developers
+- Created Edit.tsx page that shows form with pre-populated developer data
+- Added create() and edit() methods to DeveloperController for rendering pages
+- Form uses Inertia Form component with Wayfinder route integration (store/update)
+- Added routes: GET /developers/create, GET /developers/{developer}/edit
+- All tests pass (76 tests), frontend builds successfully
+- Files changed: resources/js/pages/developers/form.tsx (new), resources/js/pages/developers/create.tsx (new), resources/js/pages/developers/edit.tsx (new), app/Http/Controllers/DeveloperController.php, routes/web.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - DeveloperForm is reusable component that takes initialData and isEditing flag
+  - Form uses Wayfinder routes: store().url and update(id).url for form action
+  - Create page renders form without initial data (new record)
+  - Edit page loads developer data and renders form with isEditing=true
+  - Routes should come before {developer} catch-all to avoid matching /create as a developer ID

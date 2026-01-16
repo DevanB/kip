@@ -1,11 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
-import { index } from '@/routes/developers';
+import { index, destroy } from '@/routes/developers';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { PlusCircle } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -27,6 +37,13 @@ interface IndexProps {
 }
 
 export default function Index({ developers }: IndexProps) {
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const handleDelete = (id: number) => {
+        router.delete(destroy(id).url);
+        setDeletingId(null);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Developers" />
@@ -55,6 +72,7 @@ export default function Index({ developers }: IndexProps) {
                                         <TableHead>Email</TableHead>
                                         <TableHead>GitHub</TableHead>
                                         <TableHead>GitLab</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -64,6 +82,38 @@ export default function Index({ developers }: IndexProps) {
                                             <TableCell>{developer.email}</TableCell>
                                             <TableCell>{developer.github_username || '-'}</TableCell>
                                             <TableCell>{developer.gitlab_username || '-'}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button asChild size="sm" variant="outline">
+                                                        <Link href={`/developers/${developer.id}/edit`}>
+                                                            <Pencil className="size-4" />
+                                                        </Link>
+                                                    </Button>
+                                                    <AlertDialog open={deletingId === developer.id} onOpenChange={(open) => !open && setDeletingId(null)}>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                onClick={() => setDeletingId(developer.id)}
+                                                            >
+                                                                <Trash2 className="size-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogTitle>Delete Developer</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Are you sure you want to delete {developer.name}? This action cannot be undone.
+                                                            </AlertDialogDescription>
+                                                            <div className="flex gap-2">
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDelete(developer.id)}>
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </div>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
