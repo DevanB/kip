@@ -404,3 +404,18 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Create page renders form without initial data (new record)
   - Edit page loads developer data and renders form with isEditing=true
   - Routes should come before {developer} catch-all to avoid matching /create as a developer ID
+
+## 2026-01-16 - US-007
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Added delete button to developers index table in Actions column
+- Delete button uses AlertDialog from shadcn/ui for confirmation
+- Confirmation dialog shows developer name
+- Uses router.delete(destroy(id).url) for SPA-style deletion
+- Delete happens without page refresh via Inertia
+- All tests pass, frontend builds successfully
+- Files changed: resources/js/pages/developers/index.tsx
+- **Learnings for future iterations:**
+  - AlertDialog works with state management for showing/hiding per row
+  - Use open prop with onOpenChange for controlled dialog behavior
+  - Delete via router.delete() with Wayfinder destroy route
+  - Keep dialog state separate to avoid multiple confirmations
