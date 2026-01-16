@@ -30,6 +30,34 @@ it('displays empty state when no developers', function () {
     );
 });
 
+it('displays create page', function () {
+    $this->actingAs(User::factory()->create());
+
+    $response = $this->get('/developers/create');
+
+    $response->assertOk();
+    $response->assertInertia(
+        fn ($page) => $page
+            ->component('developers/create')
+    );
+});
+
+it('displays edit page with developer data', function () {
+    $this->actingAs(User::factory()->create());
+    $developer = Developer::factory()->create();
+
+    $response = $this->get("/developers/{$developer->id}/edit");
+
+    $response->assertOk();
+    $response->assertInertia(
+        fn ($page) => $page
+            ->component('developers/edit')
+            ->where('developer.id', $developer->id)
+            ->where('developer.name', $developer->name)
+            ->where('developer.email', $developer->email)
+    );
+});
+
 it('creates developer with valid data', function () {
     $this->actingAs(User::factory()->create());
     $response = $this->post('/developers', [

@@ -370,3 +370,20 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Route model binding automatically resolves {developer} to Developer model instance
   - Show method returns single developer as JSON using response()->json()
   - All CRUD routes now have comprehensive test coverage
+
+## 2026-01-16 - US-005
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created developers/index.tsx React component using Inertia
+- Displays table with columns: name, email, github_username, gitlab_username
+- Shows empty state with message when no developers exist
+- Includes "Add Developer" button that links to /developers/create
+- Updated DeveloperController index() method to return Inertia::render() with developers list
+- Used Table component from shadcn/ui with AppLayout wrapper
+- All tests pass, frontend build passes
+- Files changed: resources/js/pages/developers/index.tsx, app/Http/Controllers/DeveloperController.php, tests/Feature/DeveloperControllerTest.php
+- **Learnings for future iterations:**
+  - DeveloperController.index() returns Inertia page, not JSON
+  - Page name uses lowercase kebab-case: developers/index (not Developers/Index)
+  - Table rows map over developers array and display properties with null fallback ('-')
+  - Empty state uses centered text with muted-foreground color
+  - All developers loaded at once (no pagination for UI currently)

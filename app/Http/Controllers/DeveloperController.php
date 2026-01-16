@@ -40,6 +40,24 @@ class DeveloperController extends Controller
         ]);
     }
 
+    public function create(): Response
+    {
+        return Inertia::render('developers/create');
+    }
+
+    public function edit(Developer $developer): Response
+    {
+        return Inertia::render('developers/edit', [
+            'developer' => [
+                'id' => $developer->id,
+                'name' => $developer->name,
+                'email' => $developer->email,
+                'github_username' => $developer->github_username,
+                'gitlab_username' => $developer->gitlab_username,
+            ],
+        ]);
+    }
+
     public function store(DeveloperFormRequest $request): RedirectResponse
     {
         Developer::create($request->validated());
