@@ -325,3 +325,15 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Developer model follows existing conventions: HasFactory trait, fillable array, email is unique
   - DeveloperFactory uses fake()->unique()->email() to ensure unique emails across factory calls
   - github_username and gitlab_username are optional (nullable) with 70% generation rate via fake()->optional()
+
+## 2026-01-16 - US-002
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created comprehensive test suite for Developer model with 11 test cases
+- Tests verify: name/email required, email uniqueness, optional usernames, duplicate usernames allowed, casing preserved
+- All tests pass, typecheck passes
+- Files changed: tests/Feature/DeveloperTest.php
+- **Learnings for future iterations:**
+  - Developer model enforces NOT NULL constraints on name and email at database level
+  - Email uniqueness is enforced at database level with unique index
+  - GitHub/GitLab usernames can be null and may duplicate (no unique constraints)
+  - All fields preserve casing - no case normalization applied
