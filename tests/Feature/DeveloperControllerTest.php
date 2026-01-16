@@ -7,7 +7,7 @@ it('returns paginated list of developers', function () {
     $this->actingAs(User::factory()->create());
     Developer::factory()->count(20)->create();
 
-    $response = $this->get('/api/developers');
+    $response = $this->get('/developers');
 
     $response->assertSuccessful();
 
@@ -17,9 +17,21 @@ it('returns paginated list of developers', function () {
         ->and($data['data'][0])->toHaveKeys(['id', 'name', 'email']);
 });
 
+it('returns single developer by ID', function () {
+    $this->actingAs(User::factory()->create());
+    $developer = Developer::factory()->create();
+
+    $response = $this->get("/developers/{$developer->id}");
+
+    $response->assertSuccessful();
+    expect($response->json('id'))->toBe($developer->id)
+        ->and($response->json('name'))->toBe($developer->name)
+        ->and($response->json('email'))->toBe($developer->email);
+});
+
 it('creates developer with valid data', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
         'github_username' => 'johndoe',
@@ -37,7 +49,7 @@ it('creates developer with valid data', function () {
 
 it('requires name when creating developer', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'email' => 'john@example.com',
     ]);
 
@@ -46,7 +58,7 @@ it('requires name when creating developer', function () {
 
 it('requires email when creating developer', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'John Doe',
     ]);
 
@@ -55,7 +67,7 @@ it('requires email when creating developer', function () {
 
 it('validates email format', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'John Doe',
         'email' => 'not-an-email',
     ]);
@@ -67,7 +79,7 @@ it('prevents duplicate email addresses', function () {
     $this->actingAs(User::factory()->create());
     Developer::factory()->create(['email' => 'existing@example.com']);
 
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'Jane Doe',
         'email' => 'existing@example.com',
     ]);
@@ -77,7 +89,7 @@ it('prevents duplicate email addresses', function () {
 
 it('allows optional github username', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
     ]);
@@ -90,7 +102,7 @@ it('allows optional github username', function () {
 
 it('allows optional gitlab username', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
     ]);
@@ -105,7 +117,7 @@ it('updates developer with valid data', function () {
     $this->actingAs(User::factory()->create());
     $developer = Developer::factory()->create();
 
-    $response = $this->put("/api/developers/{$developer->id}", [
+    $response = $this->put("/developers/{$developer->id}", [
         'name' => 'Jane Doe',
         'email' => 'jane@example.com',
         'github_username' => 'janedoe',
@@ -123,7 +135,7 @@ it('allows email to remain unchanged when updating', function () {
     $this->actingAs(User::factory()->create());
     $developer = Developer::factory()->create(['email' => 'original@example.com']);
 
-    $response = $this->put("/api/developers/{$developer->id}", [
+    $response = $this->put("/developers/{$developer->id}", [
         'name' => 'Updated Name',
         'email' => 'original@example.com',
     ]);
@@ -137,7 +149,7 @@ it('prevents email duplication on update', function () {
     $developer1 = Developer::factory()->create(['email' => 'dev1@example.com']);
     Developer::factory()->create(['email' => 'dev2@example.com']);
 
-    $response = $this->put("/api/developers/{$developer1->id}", [
+    $response = $this->put("/developers/{$developer1->id}", [
         'name' => 'Updated',
         'email' => 'dev2@example.com',
     ]);
@@ -149,7 +161,7 @@ it('deletes developer', function () {
     $this->actingAs(User::factory()->create());
     $developer = Developer::factory()->create();
 
-    $response = $this->delete("/api/developers/{$developer->id}");
+    $response = $this->delete("/developers/{$developer->id}");
 
     $response->assertRedirect();
     expect(Developer::find($developer->id))->toBeNull();
@@ -157,7 +169,7 @@ it('deletes developer', function () {
 
 it('validates name max length', function () {
     $this->actingAs(User::factory()->create());
-    $response = $this->post('/api/developers', [
+    $response = $this->post('/developers', [
         'name' => str_repeat('a', 256),
         'email' => 'test@example.com',
     ]);

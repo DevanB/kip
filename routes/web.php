@@ -24,10 +24,11 @@ Route::middleware([
     Route::put('dr-tests/{drTest}', [DrTestController::class, 'update'])->name('dr-tests.update');
     Route::delete('dr-tests/{drTest}', [DrTestController::class, 'destroy'])->name('dr-tests.destroy');
 
-    Route::get('api/developers', [DeveloperController::class, 'index'])->name('developers.index');
-    Route::post('api/developers', [DeveloperController::class, 'store'])->name('developers.store');
-    Route::put('api/developers/{developer}', [DeveloperController::class, 'update'])->name('developers.update');
-    Route::delete('api/developers/{developer}', [DeveloperController::class, 'destroy'])->name('developers.destroy');
+    Route::get('developers', [DeveloperController::class, 'index'])->name('developers.index');
+    Route::get('developers/{developer}', [DeveloperController::class, 'show'])->name('developers.show');
+    Route::post('developers', [DeveloperController::class, 'store'])->name('developers.store');
+    Route::put('developers/{developer}', [DeveloperController::class, 'update'])->name('developers.update');
+    Route::delete('developers/{developer}', [DeveloperController::class, 'destroy'])->name('developers.destroy');
 });
 
 require __DIR__.'/settings.php';

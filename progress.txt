@@ -337,3 +337,21 @@ Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
   - Email uniqueness is enforced at database level with unique index
   - GitHub/GitLab usernames can be null and may duplicate (no unique constraints)
   - All fields preserve casing - no case normalization applied
+
+## 2026-01-16 - US-003
+Thread: https://ampcode.com/threads/T-019bc708-215e-7382-9e32-ec98a2328b80
+- Created DeveloperController with index, store, update, destroy methods for CRUD operations
+- Created DeveloperFormRequest with comprehensive validation rules and user-friendly error messages
+- Index endpoint returns paginated list (15 per page) with proper JSON response
+- Store/Update endpoints use DeveloperFormRequest validation and redirect after success
+- Update endpoint uses Rule::unique() with ignore() to allow email unchanged
+- Destroy endpoint deletes developers via route model binding
+- Created 13 comprehensive test cases covering all CRUD operations, validation, edge cases
+- All tests pass, typecheck passes, pint formatting passes
+- Files changed: app/Http/Controllers/DeveloperController.php, app/Http/Requests/DeveloperFormRequest.php, tests/Feature/DeveloperControllerTest.php, routes/web.php
+- **Learnings for future iterations:**
+  - DeveloperFormRequest uses Rule::unique('developers', 'email')->ignore($developerId) for email uniqueness with update support
+  - All validation messages are user-friendly (not cryptic validation rule names)
+  - Controller methods use redirect()->back() for form submissions (standard Laravel pattern)
+  - Paginate returns proper JSON structure with 'data' key
+  - Tests require $this->actingAs(User::factory()->create()) for auth middleware

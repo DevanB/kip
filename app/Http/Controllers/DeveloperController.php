@@ -17,6 +17,11 @@ class DeveloperController extends Controller
         return response()->json($developers);
     }
 
+    public function show(Developer $developer): JsonResponse
+    {
+        return response()->json($developer);
+    }
+
     public function store(DeveloperFormRequest $request): RedirectResponse
     {
         Developer::create($request->validated());
