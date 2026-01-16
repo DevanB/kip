@@ -1,355 +1,153 @@
 {
   "project": "Kip",
-  "branchName": "ralph/dr-kpi-dashboard",
-  "description": "Disaster Recovery KPI Dashboard - Track RTO and RPO metrics over time with manual data entry, trend charts, and progress widgets",
+  "branchName": "ralph/developer-records",
+  "description": "Developer Records for Metrics Attribution - Add a \"Developers\" feature to store canonical developer identities (name, email, GitHub username, GitLab username) for metrics attribution.",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create DR Test and Phase migrations",
-      "description": "As a developer, I need database tables to store DR test data.",
+      "title": "Create developers table and model",
+      "description": "As a developer, I want developer records stored in the database so they persist and can be reused for metrics.",
       "acceptanceCriteria": [
-        "Create `dr_tests` table with columns: id, test_date (date), rto_minutes (integer), rpo_minutes (integer), notes (text nullable), created_at, updated_at",
-        "Create `dr_test_phases` table with columns: id, dr_test_id (foreign key to dr_tests), title (string), started_at (datetime), finished_at (datetime), duration_minutes (integer), created_at, updated_at",
-        "Generate and run migrations successfully",
+        "Create `developers` table with columns: id, name, email, github_username, gitlab_username, timestamps",
+        "`name` is required; `email` is required and unique",
+        "GitHub/GitLab usernames are optional and may duplicate",
+        "No casing normalization is applied",
+        "Add unique index on email column",
+        "Migration runs successfully",
+        "Create Developer model with proper relationships",
+        "Create DeveloperFactory with proper attributes",
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-002",
-      "title": "Create DrTest and DrTestPhase Eloquent models",
-      "description": "As a developer, I need Eloquent models to interact with DR test data.",
+      "title": "Write tests for Developer model and factory",
+      "description": "As a developer, I want tests to verify Developer model behavior and data integrity.",
       "acceptanceCriteria": [
-        "Create DrTest model with fillable: test_date, rto_minutes, rpo_minutes, notes",
-        "Create DrTestPhase model with fillable: dr_test_id, title, started_at, finished_at, duration_minutes",
-        "DrTest hasMany DrTestPhase relationship",
-        "DrTestPhase belongsTo DrTest relationship",
-        "Add date casts for test_date, datetime casts for started_at/finished_at",
+        "Test that name and email are required",
+        "Test that email is unique",
+        "Test that GitHub/GitLab usernames are optional",
+        "Test casing is preserved for all fields",
+        "All model tests pass",
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Create factories for DrTest and DrTestPhase",
-      "description": "As a developer, I need factories to generate test data.",
+      "title": "Create backend CRUD endpoints for developers",
+      "description": "As a developer, I want backend CRUD endpoints so the UI can manage developer records.",
       "acceptanceCriteria": [
-        "Create DrTestFactory with realistic fake data for all fields",
-        "Create DrTestPhaseFactory with realistic fake data",
-        "DrTestPhaseFactory generates valid duration_minutes based on started_at/finished_at difference",
-        "Factories work correctly when used in tests",
+        "Create DeveloperController with index, store, update, destroy methods",
+        "Create DeveloperFormRequest with validation rules for name, email, github_username, gitlab_username",
+        "Index endpoint returns paginated list of developers",
+        "Store endpoint creates new developer and validates input",
+        "Update endpoint modifies existing developer and validates input",
+        "Destroy endpoint deletes developer by ID",
+        "All validation errors are user-friendly and specific",
+        "Related Pest feature tests pass",
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Create KPI targets migration and model",
-      "description": "As a developer, I need to store user-configurable KPI target thresholds.",
+      "title": "Create developer routes",
+      "description": "As a developer, I want routes defined so the UI can call CRUD endpoints.",
       "acceptanceCriteria": [
-        "Create `kpi_targets` table with columns: id, kpi_type (string: 'rto' or 'rpo'), target_minutes (integer), created_at, updated_at",
-        "Add unique constraint on kpi_type column",
-        "Create KpiTarget Eloquent model with fillable: kpi_type, target_minutes",
-        "Generate and run migration successfully",
+        "Register routes for GET /developers (index)",
+        "Register routes for GET /developers/{developer} (show)",
+        "Register routes for POST /developers (store)",
+        "Register routes for PUT /developers/{developer} (update)",
+        "Register routes for DELETE /developers/{developer} (destroy)",
+        "Routes use proper HTTP methods",
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Seed default KPI targets",
-      "description": "As a developer, I need default KPI targets seeded in the database.",
+      "title": "Create developer list UI page",
+      "description": "As a user, I want to see a list of developers so I can manage the directory.",
       "acceptanceCriteria": [
-        "Create KpiTargetSeeder that seeds RTO target = 60 minutes",
-        "Seeder also seeds RPO target = 60 minutes",
-        "Seeder uses updateOrCreate to be idempotent",
-        "Running seeder works without errors",
-        "Typecheck passes"
+        "Create Developers/Index.tsx page at resources/js/Pages/Developers/Index.tsx",
+        "Display table with columns: name, email, github_username, gitlab_username",
+        "Show empty state message when no developers exist",
+        "Include link/button to create new developer",
+        "Each row has edit and delete action buttons",
+        "Use existing UI components and styling conventions",
+        "Typecheck passes",
+        "Frontend build passes",
+        "Verify in browser using dev-browser skill"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Install shadcn chart component",
-      "description": "As a developer, I need the shadcn chart component installed for data visualization.",
+      "title": "Create developer form component for create/edit",
+      "description": "As a user, I want to create and edit developers so records stay up to date.",
       "acceptanceCriteria": [
-        "Run shadcn add command to install chart component",
-        "Recharts dependency is installed",
-        "Chart component files exist in components directory",
-        "Typecheck passes"
+        "Create Developers/Form.tsx component with fields for name, email, github_username, gitlab_username",
+        "Create Developers/Create.tsx page for creating new developers",
+        "Create Developers/Edit.tsx page for editing existing developers",
+        "Form shows inline error messages for validation failures",
+        "Form shows success feedback on save",
+        "Form pre-populates with developer data when editing",
+        "Use existing form components and styling",
+        "Typecheck passes",
+        "Frontend build passes",
+        "Verify in browser using dev-browser skill"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Create dashboard page with basic layout",
-      "description": "As a user, I want a dashboard page to view my DR KPI information.",
+      "title": "Implement delete functionality for developers",
+      "description": "As a user, I want to delete developers so I can remove outdated records.",
       "acceptanceCriteria": [
-        "Create DashboardController with index method",
-        "Create Dashboard Inertia page component at resources/js/Pages/Dashboard.tsx",
-        "Route accessible at /dashboard",
-        "Page renders with title 'DR KPI Dashboard'",
-        "Responsive grid layout placeholder for widgets and chart",
+        "Delete action requires confirmation dialog",
+        "Confirmation dialog shows developer name",
+        "Clicking confirm deletes the record",
+        "Deleted record no longer appears in list",
+        "Shows success feedback after deletion",
+        "List updates without page refresh",
         "Typecheck passes",
+        "Frontend build passes",
         "Verify in browser using dev-browser skill"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Browser verification requires dev server to be running (npm run dev or composer run dev)"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-008",
-      "title": "Create RTO progress widget component",
-      "description": "As a user, I want to see my current RTO value and progress toward the target.",
+      "title": "Add navigation link to developers section",
+      "description": "As a user, I want to access the developers section from the main navigation.",
       "acceptanceCriteria": [
-        "Create RtoWidget component that receives latestRto and targetRto props",
-        "Widget displays latest RTO value prominently (or 'No data' if null)",
-        "Shows target threshold value",
-        "Visual progress indicator showing percentage toward goal",
-        "Color coding: green when at/below target, yellow when within 50%, red when over 50% above target",
-        "Shows 'Target achieved!' message when RTO <= target",
+        "Add link to Developers section in main navigation",
+        "Link navigates to /developers list page",
+        "Link is visually consistent with other navigation items",
+        "Active state shows when on developers pages",
         "Typecheck passes",
+        "Frontend build passes",
         "Verify in browser using dev-browser skill"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
-    },
-    {
-      "id": "US-009",
-      "title": "Create RPO progress widget component",
-      "description": "As a user, I want to see my current RPO value and progress toward the target.",
-      "acceptanceCriteria": [
-        "Create RpoWidget component that receives latestRpo and targetRpo props",
-        "Widget displays latest RPO value prominently (or 'No data' if null)",
-        "Shows target threshold value",
-        "Visual progress indicator showing percentage toward goal",
-        "Color coding: green when at/below target, yellow when within 50%, red when over 50% above target",
-        "Shows 'Target achieved!' message when RPO <= target",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 9,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
-    },
-    {
-      "id": "US-010",
-      "title": "Create RTO/RPO trend chart component",
-      "description": "As a user, I want to see my RTO and RPO values graphed over time.",
-      "acceptanceCriteria": [
-        "Create TrendChart component using shadcn chart (Recharts)",
-        "Component receives array of test data with test_date, rto_minutes, rpo_minutes",
-        "Line chart with x-axis showing test dates, y-axis showing minutes",
-        "Two lines: one for RTO (blue), one for RPO (orange)",
-        "Interactive tooltips showing exact values on hover",
-        "Chart responsive to container width",
-        "Empty state message when no test data exists",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 10,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
-    },
-    {
-      "id": "US-011",
-      "title": "Add target reference lines to trend chart",
-      "description": "As a user, I want to see target thresholds displayed on the trend chart.",
-      "acceptanceCriteria": [
-        "TrendChart component receives rtoTarget and rpoTarget props",
-        "Horizontal dashed reference line for RTO target",
-        "Horizontal dashed reference line for RPO target",
-        "Reference lines labeled with target value",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 11,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
-    },
-    {
-      "id": "US-012",
-      "title": "Wire dashboard to display widgets and chart with data",
-      "description": "As a user, I want the dashboard to show real data from the database.",
-      "acceptanceCriteria": [
-        "DashboardController queries latest DR test for RTO/RPO values",
-        "DashboardController queries all DR tests for trend chart data",
-        "DashboardController queries KPI targets for both widgets and chart",
-        "Dashboard page passes data to RtoWidget, RpoWidget, and TrendChart components",
-        "Widgets and chart display correctly with seeded or factory data",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 12,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-013",
-      "title": "Create DR test entry form page",
-      "description": "As a user, I want a form to manually enter DR test results.",
-      "acceptanceCriteria": [
-        "Create DrTestController with create and store methods",
-        "Create DrTests/Create Inertia page component",
-        "Route accessible at /dr-tests/create",
-        "Form includes: test date picker, RTO minutes input, RPO minutes input, notes textarea",
-        "Form validation via FormRequest: test_date required, rto_minutes required positive integer, rpo_minutes required positive integer",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 13,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-014",
-      "title": "Add dynamic phases section to DR test form",
-      "description": "As a user, I want to add multiple phases to my DR test entry.",
-      "acceptanceCriteria": [
-        "Add phases array to form state",
-        "Add Phase button appends new phase with title, started_at, finished_at fields",
-        "Remove button deletes a phase from the array",
-        "Duration auto-calculates and displays when both times are set",
-        "At least one phase required validation",
-        "Phases saved to dr_test_phases table on form submission",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 14,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-015",
-      "title": "Add navigation link to create DR test from dashboard",
-      "description": "As a user, I want to navigate to the DR test entry form from the dashboard.",
-      "acceptanceCriteria": [
-        "Add 'Add DR Test' button/link on dashboard page",
-        "Button navigates to /dr-tests/create",
-        "Successful form submission redirects back to dashboard",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 15,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
-    },
-    {
-      "id": "US-016",
-      "title": "Create DR test history list page",
-      "description": "As a user, I want to view my past DR test entries.",
-      "acceptanceCriteria": [
-        "Add index method to DrTestController",
-        "Create DrTests/Index Inertia page component",
-        "Route accessible at /dr-tests",
-        "Table displays all DR tests sorted by date (newest first)",
-        "Each row shows: test date, RTO, RPO, number of phases",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 16,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-017",
-      "title": "Create DR test detail view with phases",
-      "description": "As a user, I want to view the details of a DR test including all phases.",
-      "acceptanceCriteria": [
-        "Add show method to DrTestController",
-        "Create DrTests/Show Inertia page component",
-        "Route accessible at /dr-tests/{drTest}",
-        "Page displays test date, RTO, RPO, notes",
-        "Lists all phases with: title, start time, finish time, calculated duration",
-        "Link from history list row to detail view",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 17,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-018",
-      "title": "Add edit functionality to DR test",
-      "description": "As a user, I want to edit a DR test entry to correct mistakes.",
-      "acceptanceCriteria": [
-        "Add edit and update methods to DrTestController",
-        "Create DrTests/Edit Inertia page component",
-        "Route accessible at /dr-tests/{drTest}/edit",
-        "Form pre-populated with existing data including phases",
-        "Edit button visible on test detail view",
-        "Successful update redirects to detail or history page",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 18,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-019",
-      "title": "Add delete functionality to DR test",
-      "description": "As a user, I want to delete a DR test entry.",
-      "acceptanceCriteria": [
-        "Add destroy method to DrTestController",
-        "Delete button visible on test detail view",
-        "Confirmation dialog before deletion",
-        "Deleting a test also deletes associated phases (cascade)",
-        "Successful deletion redirects to history page",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 19,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-020",
-      "title": "Create KPI target settings page",
-      "description": "As a user, I want to configure my target thresholds for RTO and RPO.",
-      "acceptanceCriteria": [
-        "Create KpiTargetController with edit and update methods",
-        "Create Settings/KpiTargets Inertia page component",
-        "Route accessible at /settings/kpi-targets",
-        "Form with RTO target and RPO target inputs (in minutes)",
-        "Current values pre-populated in form",
-        "Validation: targets must be positive integers",
-        "Successful save updates database and shows success message",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 20,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck, build, and feature tests"
-    },
-    {
-      "id": "US-021",
-      "title": "Add settings link to dashboard",
-      "description": "As a user, I want to access KPI target settings from the dashboard.",
-      "acceptanceCriteria": [
-        "Add settings icon/link on dashboard page",
-        "Link navigates to /settings/kpi-targets",
-        "Link to history page (/dr-tests) also visible on dashboard",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 21,
-      "passes": true,
-      "notes": "Browser MCP unavailable; component verified via typecheck and build"
+      "passes": false,
+      "notes": ""
     }
   ]
 }
